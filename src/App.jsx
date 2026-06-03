@@ -3,7 +3,6 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
 import Header from './components/Header'
 import HomePage from './pages/HomePage'
-import HistoryPage from './pages/HistoryPage'
 import StatsPage from './pages/StatsPage'
 import PresetsPage from './pages/PresetsPage'
 import LoginPage from './pages/LoginPage'
@@ -11,6 +10,7 @@ import RegisterPage from './pages/RegisterPage'
 import HealthPage from './pages/HealthPage'
 import FileManagerPage from './pages/FileManagerPage'
 import JobHistoryPage from './pages/JobHistoryPage'
+import ProfilePage from './pages/ProfilePage'
 
 export default function App() {
   return (
@@ -20,7 +20,6 @@ export default function App() {
           <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/history" element={<HistoryPage />} />
             <Route path="/stats" element={<StatsPage />} />
             <Route path="/presets" element={<PresetsPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -28,6 +27,7 @@ export default function App() {
             <Route path="health" element={<HealthPage />} />
             <Route path="files" element={<FileManagerPage />} />
             <Route path="jobs"  element={<JobHistoryPage />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Routes>
         </div>
         <Toaster
