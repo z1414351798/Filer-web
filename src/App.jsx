@@ -9,6 +9,7 @@ import PresetsPage from './pages/PresetsPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import HealthPage from './pages/HealthPage'
+import FileManagerPage from './pages/FileManagerPage'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="health" element={<HealthPage />} />
+            <Route path="files" element={<FileManagerPage />} />
           </Routes>
         </div>
         <Toaster

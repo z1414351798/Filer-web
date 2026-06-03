@@ -49,6 +49,19 @@ const FIELDS = {
   TEXT_CASE_CONVERT:       ['caseType'],
   VIDEO_EXTRACT_FRAMES:    ['frameInterval'],
   VIDEO_ADD_WATERMARK:     ['videoWatermarkText'],
+  // PDF extras
+  PDF_METADATA_EDIT:    ['pdfTitle', 'pdfAuthor', 'pdfSubject', 'pdfKeywords'],
+  // Video/audio
+  VIDEO_SPEED_CHANGE:   ['videoSpeed'],
+  AUDIO_SPLIT:          ['splitAtSec'],
+  // Image animated GIF
+  IMAGE_ANIMATED_GIF:   ['gifDelay'],
+  // HTML
+  HTML_SANITIZE:        ['sanitizeLevel'],
+  // Generator tools
+  UUID_GENERATE:        ['uuidCount'],
+  LOREM_IPSUM:          ['loremParagraphs'],
+  RANDOM_CSV:           ['randomColumns', 'randomRows'],
 }
 
 const DEFAULTS = {
@@ -82,6 +95,15 @@ const DEFAULTS = {
   caseType: 'upper',
   frameInterval: 5,
   videoWatermarkText: 'FILER',
+  pdfTitle: '', pdfAuthor: '', pdfSubject: '', pdfKeywords: '',
+  videoSpeed: 2.0,
+  splitAtSec: 30,
+  gifDelay: 100,
+  sanitizeLevel: 'basic',
+  uuidCount: 10,
+  loremParagraphs: 5,
+  randomColumns: 'id,name,email,score',
+  randomRows: 100,
 }
 
 export default function ConversionForm({ type, file, onSubmit }) {
@@ -136,6 +158,12 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('cropBottom')   && <NumField label="Crop Bottom (pt)" value={fields.cropBottom} onChange={v => set('cropBottom', v)} min={0} max={300} />}
       {needed.includes('cropLeft')     && <NumField label="Crop Left (pt)"   value={fields.cropLeft}   onChange={v => set('cropLeft', v)}   min={0} max={300} />}
       {needed.includes('frameInterval') && <NumField label="Seconds between frames" value={fields.frameInterval} onChange={v => set('frameInterval', v)} min={1} max={60} />}
+      {needed.includes('videoSpeed')     && <SliderField label="Speed multiplier" min={0.25} max={4} step={0.25} value={fields.videoSpeed} onChange={v => set('videoSpeed', v)} display={v => v + '×'} />}
+      {needed.includes('splitAtSec')     && <NumField label="Split at second"   value={fields.splitAtSec}     onChange={v => set('splitAtSec', v)}     min={1} />}
+      {needed.includes('gifDelay')       && <NumField label="Frame delay (cs, 100=1s)" value={fields.gifDelay} onChange={v => set('gifDelay', v)}    min={10} max={500} />}
+      {needed.includes('uuidCount')      && <NumField label="Number of UUIDs"   value={fields.uuidCount}      onChange={v => set('uuidCount', v)}      min={1} max={10000} />}
+      {needed.includes('loremParagraphs') && <NumField label="Paragraphs"       value={fields.loremParagraphs} onChange={v => set('loremParagraphs', v)} min={1} max={100} />}
+      {needed.includes('randomRows')     && <NumField label="Number of rows"    value={fields.randomRows}     onChange={v => set('randomRows', v)}     min={1} max={10000} />}
 
       {/* Sliders */}
       {needed.includes('quality') && (
@@ -169,6 +197,11 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('bottomText') && <TextField label="Bottom text" value={fields.bottomText} onChange={v => set('bottomText', v)} placeholder="BOTTOM TEXT" />}
       {needed.includes('pageOrder')          && <TextField label="Page order (e.g. 3,1,2)" value={fields.pageOrder}          onChange={v => set('pageOrder', v)} placeholder="3,1,2" />}
       {needed.includes('videoWatermarkText') && <TextField label="Watermark text"           value={fields.videoWatermarkText} onChange={v => set('videoWatermarkText', v)} />}
+      {needed.includes('pdfTitle')    && <TextField label="PDF Title"    value={fields.pdfTitle}    onChange={v => set('pdfTitle', v)} />}
+      {needed.includes('pdfAuthor')   && <TextField label="PDF Author"   value={fields.pdfAuthor}   onChange={v => set('pdfAuthor', v)} />}
+      {needed.includes('pdfSubject')  && <TextField label="PDF Subject"  value={fields.pdfSubject}  onChange={v => set('pdfSubject', v)} />}
+      {needed.includes('pdfKeywords') && <TextField label="PDF Keywords" value={fields.pdfKeywords} onChange={v => set('pdfKeywords', v)} placeholder="keyword1, keyword2" />}
+      {needed.includes('randomColumns') && <TextField label="Column names (comma-separated)" value={fields.randomColumns} onChange={v => set('randomColumns', v)} placeholder="id,name,email,score" />}
       {needed.includes('borderColor')    && (
         <label className="block">
           <span className="text-xs text-slate-400 mb-1 block">Border color</span>
@@ -228,6 +261,15 @@ export default function ConversionForm({ type, file, onSubmit }) {
             { value: 'camel',  label: 'camelCase' },
             { value: 'snake',  label: 'snake_case' },
             { value: 'kebab',  label: 'kebab-case' },
+          ]} />
+      )}
+      {needed.includes('sanitizeLevel') && (
+        <SelectField label="Sanitize Level" value={fields.sanitizeLevel} onChange={v => set('sanitizeLevel', v)}
+          options={[
+            { value: 'basic',          label: 'Basic (bold, italic, links, lists)' },
+            { value: 'basic_w_images', label: 'Basic + Images' },
+            { value: 'relaxed',        label: 'Relaxed (allows more tags)' },
+            { value: 'none',           label: 'Strip all HTML tags' },
           ]} />
       )}
 

@@ -60,6 +60,9 @@ const CATEGORIES = [
       { label: 'Meme Generator', type: 'IMAGE_MEME' },
       { label: 'Compare Images', type: 'IMAGE_COMPARE' },
       { label: 'Convert to ICO', type: 'IMAGE_TO_ICO' },
+      { label: 'Strip EXIF Metadata', type: 'IMAGE_EXIF_STRIP' },
+      { label: 'Noise Reduction', type: 'IMAGE_NOISE_REDUCE' },
+      { label: 'Animated GIF from Images', type: 'IMAGE_ANIMATED_GIF' },
     ]
   },
   {
@@ -79,6 +82,10 @@ const CATEGORIES = [
       { label: 'Linearize PDF', type: 'PDF_LINEARIZE' },
       { label: 'Crop Margins', type: 'PDF_CROP_MARGINS' },
       { label: 'Reorder Pages', type: 'PDF_REORDER_PAGES' },
+      { label: 'Edit Metadata', type: 'PDF_METADATA_EDIT' },
+      { label: 'Extract Images', type: 'PDF_EXTRACT_IMAGES' },
+      { label: 'Convert to Grayscale', type: 'PDF_GRAYSCALE' },
+      { label: 'Flatten (remove forms/annotations)', type: 'PDF_FLATTEN' },
       { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
       { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
       { label: 'PDF to Text', type: 'PDF_TO_DOCX' },
@@ -124,6 +131,10 @@ const CATEGORIES = [
       { label: 'Text Case Convert', type: 'TEXT_CASE_CONVERT' },
       { label: 'SRT to VTT', type: 'SUBTITLE_SRT_TO_VTT' },
       { label: 'VTT to SRT', type: 'VTT_TO_SRT' },
+      { label: 'CSV Statistics', type: 'CSV_STATS' },
+      { label: 'Generate UUIDs', type: 'UUID_GENERATE' },
+      { label: 'Lorem Ipsum', type: 'LOREM_IPSUM' },
+      { label: 'Random CSV Data', type: 'RANDOM_CSV' },
     ]
   },
   {
@@ -144,6 +155,8 @@ const CATEGORIES = [
       { label: 'RTF to PDF', type: 'RTF_TO_PDF' },
       { label: 'RTF to Text', type: 'RTF_TO_TEXT' },
       { label: 'Merge Excel Files', type: 'EXCEL_MERGE' },
+      { label: 'Sanitize HTML', type: 'HTML_SANITIZE' },
+      { label: 'HTML to Markdown', type: 'HTML_TO_MARKDOWN' },
     ]
   },
   {
@@ -189,6 +202,8 @@ const CATEGORIES = [
       { label: 'Merge Audio Files', type: 'AUDIO_MERGE' },
       { label: 'Extract Frames', type: 'VIDEO_EXTRACT_FRAMES' },
       { label: 'Add Watermark to Video', type: 'VIDEO_ADD_WATERMARK' },
+      { label: 'Change Video Speed', type: 'VIDEO_SPEED_CHANGE' },
+      { label: 'Split Audio', type: 'AUDIO_SPLIT' },
     ]
   },
   {
