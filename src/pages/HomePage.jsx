@@ -1,251 +1,269 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import UploadZone from '../components/UploadZone'
 import ConversionForm from '../components/ConversionForm'
 import JobTracker from '../components/JobTracker'
 import ImagePreview from '../components/ImagePreview'
-import FileInfoPanel from '../components/FileInfoPanel'
 import QrWidget from '../components/QrWidget'
-import { motion } from 'framer-motion'
+import FileInfoPanel from '../components/FileInfoPanel'
+import BatchUpload from '../components/BatchUpload'
+import { createJob } from '../api/filerApi'
+import toast from 'react-hot-toast'
 import {
-  ImageIcon, FileText, Archive, ScanText, FileSpreadsheet,
-  Minimize2, RotateCcw, FlipHorizontal, Palette, Droplets,
-  GitMerge, Scissors, FileImage, Type, Lock, Unlock,
-  AlignLeft, ChevronDown, ChevronUp, Zap, Shield, Globe, Clock,
-  QrCode, BarChart2, Database, FileJson, Code2, Crop,
-  SunMedium, Contrast, Sparkles, Hash, Info
+  Image, FileText, Eye, QrCode, Table, File,
+  Archive, Info, ChevronDown, Layers, Video, Code
 } from 'lucide-react'
 
-const PERKS = [
-  { icon: Zap,    label: 'Lightning Fast',  desc: 'Kafka-powered async pipeline' },
-  { icon: Shield, label: 'Secure',           desc: 'Files auto-deleted after 24h' },
-  { icon: Globe,  label: '40+ Operations',   desc: 'Images, PDF, QR, OCR, data…' },
-  { icon: Clock,  label: 'Live Progress',    desc: 'Real-time status polling' },
-]
-
-const CATS = [
+const CATEGORIES = [
   {
-    id: 'image', label: 'Image Formats', icon: ImageIcon,
-    color: 'text-purple-400', border: 'border-purple-500/30',
+    id: 'img-fmt', label: 'Image Formats', Icon: Image,
     ops: [
-      { type: 'IMAGE_TO_JPG',   label: 'To JPG',  icon: ImageIcon },
-      { type: 'IMAGE_TO_PNG',   label: 'To PNG',  icon: ImageIcon },
-      { type: 'IMAGE_TO_WEBP',  label: 'To WEBP', icon: ImageIcon },
-      { type: 'IMAGE_TO_BMP',   label: 'To BMP',  icon: ImageIcon },
-      { type: 'IMAGE_TO_GIF',   label: 'To GIF',  icon: ImageIcon },
+      { label: 'To PNG', type: 'IMAGE_TO_PNG' },
+      { label: 'To JPG', type: 'IMAGE_TO_JPG' },
+      { label: 'To WEBP', type: 'IMAGE_TO_WEBP' },
+      { label: 'To BMP', type: 'IMAGE_TO_BMP' },
+      { label: 'To GIF', type: 'IMAGE_TO_GIF' },
+      { label: 'To TIFF', type: 'IMAGE_TO_TIFF' },
     ]
   },
   {
-    id: 'imgops', label: 'Image Edit', icon: Crop,
-    color: 'text-pink-400', border: 'border-pink-500/30',
+    id: 'img-edit', label: 'Image Edit', Icon: Image,
     ops: [
-      { type: 'IMAGE_RESIZE',    label: 'Resize',     icon: Minimize2 },
-      { type: 'IMAGE_COMPRESS',  label: 'Compress',   icon: Minimize2 },
-      { type: 'IMAGE_ROTATE',    label: 'Rotate',     icon: RotateCcw },
-      { type: 'IMAGE_FLIP',      label: 'Flip',       icon: FlipHorizontal },
-      { type: 'IMAGE_CROP',      label: 'Crop',       icon: Crop },
-      { type: 'IMAGE_WATERMARK', label: 'Watermark',  icon: Droplets },
+      { label: 'Resize', type: 'IMAGE_RESIZE' },
+      { label: 'Compress', type: 'IMAGE_COMPRESS' },
+      { label: 'Rotate', type: 'IMAGE_ROTATE' },
+      { label: 'Flip Horizontal', type: 'IMAGE_FLIP_H' },
+      { label: 'Flip Vertical', type: 'IMAGE_FLIP_V' },
+      { label: 'Grayscale', type: 'IMAGE_GRAYSCALE' },
+      { label: 'Watermark', type: 'IMAGE_WATERMARK' },
     ]
   },
   {
-    id: 'imgfilter', label: 'Image Filters', icon: Sparkles,
-    color: 'text-fuchsia-400', border: 'border-fuchsia-500/30',
+    id: 'img-filter', label: 'Image Filters', Icon: Eye,
     ops: [
-      { type: 'IMAGE_GRAYSCALE', label: 'Grayscale',  icon: Palette },
-      { type: 'IMAGE_SEPIA',     label: 'Sepia',      icon: Palette },
-      { type: 'IMAGE_INVERT',    label: 'Invert',     icon: Contrast },
-      { type: 'IMAGE_BLUR',      label: 'Blur',       icon: Sparkles },
-      { type: 'IMAGE_SHARPEN',   label: 'Sharpen',    icon: Sparkles },
-      { type: 'IMAGE_BRIGHTNESS',label: 'Brightness', icon: SunMedium },
+      { label: 'Crop', type: 'IMAGE_CROP' },
+      { label: 'Sepia', type: 'IMAGE_SEPIA' },
+      { label: 'Invert', type: 'IMAGE_INVERT' },
+      { label: 'Blur', type: 'IMAGE_BLUR' },
+      { label: 'Sharpen', type: 'IMAGE_SHARPEN' },
+      { label: 'Brightness', type: 'IMAGE_BRIGHTNESS' },
     ]
   },
   {
-    id: 'pdf', label: 'PDF', icon: FileText,
-    color: 'text-red-400', border: 'border-red-500/30',
+    id: 'img-enhance', label: 'Image Enhance', Icon: Layers,
     ops: [
-      { type: 'PDF_MERGE',     label: 'Merge',        icon: GitMerge },
-      { type: 'PDF_SPLIT',     label: 'Split',        icon: Scissors },
-      { type: 'PDF_TO_IMAGES', label: 'To Images',    icon: FileImage },
-      { type: 'IMAGES_TO_PDF', label: 'Images→PDF',  icon: FileText },
-      { type: 'PDF_TO_TEXT',   label: 'Extract Text', icon: Type },
-      { type: 'PDF_ENCRYPT',   label: 'Encrypt',      icon: Lock },
-      { type: 'PDF_DECRYPT',   label: 'Decrypt',      icon: Unlock },
+      { label: 'Create Collage', type: 'IMAGE_COLLAGE' },
+      { label: 'Add Border', type: 'IMAGE_BORDER' },
+      { label: 'Round Corners', type: 'IMAGE_ROUND_CORNERS' },
+      { label: 'Color Palette', type: 'IMAGE_COLOR_PALETTE' },
     ]
   },
   {
-    id: 'ocr', label: 'OCR / Scan', icon: ScanText,
-    color: 'text-green-400', border: 'border-green-500/30',
+    id: 'pdf', label: 'PDF Tools', Icon: FileText,
     ops: [
-      { type: 'OCR_IMAGE', label: 'OCR Image', icon: ScanText },
-      { type: 'OCR_PDF',   label: 'OCR PDF',   icon: ScanText },
+      { label: 'Merge PDFs', type: 'PDF_MERGE' },
+      { label: 'Split PDF', type: 'PDF_SPLIT' },
+      { label: 'PDF to Images', type: 'PDF_TO_IMAGES' },
+      { label: 'Images to PDF', type: 'IMAGES_TO_PDF' },
+      { label: 'Extract Text', type: 'PDF_EXTRACT_TEXT' },
+      { label: 'Encrypt PDF', type: 'PDF_ENCRYPT' },
+      { label: 'Decrypt PDF', type: 'PDF_DECRYPT' },
+      { label: 'Compress PDF', type: 'PDF_COMPRESS' },
+      { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
+      { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
+      { label: 'PDF to Text', type: 'PDF_TO_DOCX' },
     ]
   },
   {
-    id: 'qr', label: 'QR / Barcode', icon: QrCode,
-    color: 'text-violet-400', border: 'border-violet-500/30',
+    id: 'ocr', label: 'OCR / Scan', Icon: Eye,
     ops: [
-      { type: 'QR_SCAN',          label: 'Scan QR/Code',  icon: QrCode },
-      { type: 'BARCODE_GENERATE', label: 'Gen Barcode',   icon: BarChart2 },
-      { type: 'BARCODE_SCAN',     label: 'Scan Barcode',  icon: BarChart2 },
+      { label: 'OCR Image', type: 'OCR_IMAGE' },
+      { label: 'OCR PDF', type: 'OCR_PDF' },
     ]
   },
   {
-    id: 'data', label: 'Data Formats', icon: Database,
-    color: 'text-cyan-400', border: 'border-cyan-500/30',
+    id: 'qr', label: 'QR & Barcode', Icon: QrCode,
     ops: [
-      { type: 'CSV_TO_JSON',    label: 'CSV→JSON',   icon: FileJson },
-      { type: 'JSON_TO_CSV',    label: 'JSON→CSV',   icon: Database },
-      { type: 'XML_TO_JSON',    label: 'XML→JSON',   icon: Code2 },
-      { type: 'JSON_TO_XML',    label: 'JSON→XML',   icon: Code2 },
-      { type: 'MARKDOWN_TO_HTML', label: 'MD→HTML',  icon: Code2 },
-      { type: 'MARKDOWN_TO_PDF',  label: 'MD→PDF',   icon: FileText },
-      { type: 'TEXT_TO_PDF',    label: 'Text→PDF',   icon: FileText },
-      { type: 'HTML_TO_PDF',    label: 'HTML→PDF',   icon: FileText },
+      { label: 'Generate QR', type: 'QR_GENERATE' },
+      { label: 'Generate Barcode', type: 'BARCODE_GENERATE' },
+      { label: 'Scan QR/Barcode', type: 'QR_SCAN' },
     ]
   },
   {
-    id: 'office', label: 'Office', icon: FileSpreadsheet,
-    color: 'text-emerald-400', border: 'border-emerald-500/30',
+    id: 'data', label: 'Data Formats', Icon: Table,
     ops: [
-      { type: 'EXCEL_TO_CSV', label: 'Excel→CSV',  icon: FileSpreadsheet },
-      { type: 'CSV_TO_EXCEL', label: 'CSV→Excel',  icon: FileSpreadsheet },
-      { type: 'WORD_TO_TEXT', label: 'Word→Text',  icon: AlignLeft },
+      { label: 'CSV to JSON', type: 'CSV_TO_JSON' },
+      { label: 'JSON to CSV', type: 'JSON_TO_CSV' },
+      { label: 'XML to JSON', type: 'XML_TO_JSON' },
+      { label: 'JSON to XML', type: 'JSON_TO_XML' },
+      { label: 'JSON to YAML', type: 'JSON_TO_YAML' },
+      { label: 'YAML to JSON', type: 'YAML_TO_JSON' },
+      { label: 'Format JSON', type: 'JSON_FORMAT' },
+      { label: 'Format XML', type: 'XML_FORMAT' },
+      { label: 'Base64 Encode', type: 'BASE64_ENCODE' },
+      { label: 'Base64 Decode', type: 'BASE64_DECODE' },
+      { label: 'Text Diff', type: 'TEXT_DIFF' },
     ]
   },
   {
-    id: 'archive', label: 'Archive', icon: Archive,
-    color: 'text-amber-400', border: 'border-amber-500/30',
+    id: 'office', label: 'Office', Icon: File,
     ops: [
-      { type: 'ZIP_CREATE',  label: 'Create ZIP',  icon: Archive },
-      { type: 'ZIP_EXTRACT', label: 'Extract ZIP', icon: Archive },
+      { label: 'Excel to CSV', type: 'EXCEL_TO_CSV' },
+      { label: 'CSV to Excel', type: 'CSV_TO_EXCEL' },
+      { label: 'Word to Text', type: 'WORD_TO_TEXT' },
+      { label: 'Markdown to HTML', type: 'MARKDOWN_TO_HTML' },
+      { label: 'Markdown to PDF', type: 'MARKDOWN_TO_PDF' },
+      { label: 'Text to PDF', type: 'TEXT_TO_PDF' },
+      { label: 'HTML to PDF', type: 'HTML_TO_PDF' },
     ]
   },
   {
-    id: 'util', label: 'File Utilities', icon: Info,
-    color: 'text-sky-400', border: 'border-sky-500/30',
+    id: 'archive', label: 'Archive', Icon: Archive,
     ops: [
-      { type: 'FILE_CHECKSUM',  label: 'Checksum',    icon: Hash },
-      { type: 'IMAGE_METADATA', label: 'EXIF Data',   icon: Info },
-      { type: 'PDF_INFO',       label: 'PDF Info',    icon: Info },
+      { label: 'Create ZIP', type: 'ZIP_CREATE' },
+      { label: 'Extract ZIP', type: 'ZIP_EXTRACT' },
+      { label: 'Create TAR.GZ', type: 'TAR_CREATE' },
+      { label: 'Extract TAR.GZ', type: 'TAR_EXTRACT' },
+    ]
+  },
+  {
+    id: 'svg', label: 'SVG', Icon: Code,
+    ops: [
+      { label: 'SVG to PNG', type: 'SVG_TO_PNG' },
+      { label: 'SVG to PDF', type: 'SVG_TO_PDF' },
+    ]
+  },
+  {
+    id: 'video', label: 'Video', Icon: Video,
+    ops: [
+      { label: 'Extract Thumbnail', type: 'VIDEO_THUMBNAIL' },
+      { label: 'Video to GIF', type: 'VIDEO_TO_GIF' },
+      { label: 'Extract Audio (MP3)', type: 'VIDEO_AUDIO_EXTRACT' },
+    ]
+  },
+  {
+    id: 'info', label: 'File Utilities', Icon: Info,
+    ops: [
+      { label: 'Image Metadata (EXIF)', type: '_INFO_IMAGE' },
+      { label: 'PDF Info', type: '_INFO_PDF' },
+      { label: 'Checksum (SHA-256)', type: '_INFO_CHECKSUM' },
     ]
   },
 ]
 
 export default function HomePage() {
-  const [fileInfo, setFileInfo]   = useState(null)
-  const [selected, setSelected]   = useState(null)
-  const [currentJob, setCurrentJob] = useState(null)
+  const [uploadedFile, setUploadedFile] = useState(null)
+  const [selectedOp, setSelectedOp] = useState(null)
+  const [jobId, setJobId] = useState(null)
+  const [openCat, setOpenCat] = useState(null)
 
-  const handleFileUploaded = (info) => {
-    setFileInfo(info)
-    setSelected(null)
-    setCurrentJob(null)
+  const handleUpload = (file) => {
+    setUploadedFile(file)
+    setSelectedOp(null)
+    setJobId(null)
+  }
+
+  const handleConvert = async (params) => {
+    try {
+      const job = await createJob({ fileId: uploadedFile.fileId, conversionType: selectedOp, ...params })
+      setJobId(job.jobId)
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to start conversion')
+    }
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10 space-y-12">
-
-      {/* Hero */}
-      <div className="text-center space-y-4">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="text-4xl sm:text-5xl font-extrabold tracking-tight"
-        >
-          Transform Any File,{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-purple-400">
-            Instantly
-          </span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.15 } }}
-          className="text-slate-400 max-w-xl mx-auto text-sm"
-        >
-          Convert images &bull; Edit &amp; filter &bull; PDF tools &bull; OCR &bull;
-          QR codes &bull; Data formats &bull; File utilities &mdash; all async, all free.
-        </motion.p>
+    <main className="max-w-5xl mx-auto px-4 py-10 space-y-8">
+      <div className="text-center space-y-3">
+        <h1 className="text-4xl font-extrabold text-white">File Converter</h1>
+        <p className="text-slate-400">Convert, transform & process any file — images, PDFs, video, data formats and more.</p>
       </div>
 
-      {/* Perks */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {PERKS.map(({ icon: Icon, label, desc }) => (
-          <div key={label} className="card text-center space-y-1.5 py-4">
-            <Icon size={22} className="mx-auto text-brand-400" />
-            <p className="font-semibold text-sm">{label}</p>
-            <p className="text-xs text-slate-500">{desc}</p>
+      <UploadZone onUpload={handleUpload} />
+
+      {uploadedFile && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          <ImagePreview file={uploadedFile} />
+          <FileInfoPanel file={uploadedFile} />
+        </motion.div>
+      )}
+
+      {/* Operation categories */}
+      <div className="space-y-2">
+        {CATEGORIES.map(({ id, label, Icon, ops }) => (
+          <div key={id} className="card overflow-hidden">
+            <button
+              className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-800/50 transition-colors"
+              onClick={() => setOpenCat(openCat === id ? null : id)}
+            >
+              <span className="flex items-center gap-3 font-medium text-white">
+                <Icon size={18} className="text-indigo-400" />
+                {label}
+                <span className="text-xs text-slate-500">({ops.length})</span>
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-slate-500 transition-transform ${openCat === id ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {openCat === id && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 pb-5 space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      {ops.map(op => (
+                        <button
+                          key={op.type}
+                          onClick={() => { setSelectedOp(op.type); setJobId(null) }}
+                          className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                            selectedOp === op.type
+                              ? 'bg-indigo-600 border-indigo-600 text-white'
+                              : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'
+                          }`}
+                        >
+                          {op.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedOp && ops.find(o => o.type === selectedOp) && (
+                      <ConversionForm
+                        type={selectedOp}
+                        file={uploadedFile}
+                        onSubmit={handleConvert}
+                      />
+                    )}
+
+                    <JobTracker jobId={jobId} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>
 
-      {/* Workspace */}
-      <div className="grid lg:grid-cols-2 gap-8 items-start">
-
-        {/* Left: upload + operation picker */}
-        <div className="space-y-5">
-          <UploadZone onFileUploaded={handleFileUploaded} />
-          {fileInfo && <ImagePreview fileInfo={fileInfo} />}
-          {fileInfo && <FileInfoPanel fileInfo={fileInfo} />}
-          {fileInfo && (
-            <OperationAccordion
-              selected={selected}
-              onSelect={setSelected}
-            />
-          )}
-        </div>
-
-        {/* Right: QR widget + options form + job tracker */}
-        <div className="space-y-5">
-          <QrWidget />
-          {selected && selected !== 'QR_GENERATE' && (
-            <ConversionForm
-              fileInfo={fileInfo}
-              conversionType={selected}
-              onJobCreated={setCurrentJob}
-            />
-          )}
-          {currentJob && <JobTracker job={currentJob} />}
-        </div>
+      {/* QR inline widget */}
+      <div className="card p-5">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <QrCode size={18} className="text-indigo-400" /> Quick QR Generator
+        </h2>
+        <QrWidget />
       </div>
-    </div>
-  )
-}
 
-function OperationAccordion({ selected, onSelect }) {
-  const [open, setOpen] = useState('image')
-  return (
-    <div className="space-y-2">
-      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Choose Operation</p>
-      {CATS.map(cat => (
-        <div key={cat.id} className={`card border ${cat.border} overflow-hidden p-4`}>
-          <button
-            className="w-full flex items-center justify-between"
-            onClick={() => setOpen(open === cat.id ? null : cat.id)}
-          >
-            <span className={`flex items-center gap-2 font-semibold text-sm ${cat.color}`}>
-              <cat.icon size={16} />{cat.label}
-              <span className="text-xs font-normal text-slate-500">{cat.ops.length} ops</span>
-            </span>
-            {open === cat.id
-              ? <ChevronUp size={14} className="text-slate-500" />
-              : <ChevronDown size={14} className="text-slate-500" />}
-          </button>
-          {open === cat.id && (
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              {cat.ops.map(op => (
-                <button
-                  key={op.type}
-                  onClick={() => onSelect(selected === op.type ? null : op.type)}
-                  className={`rounded-xl p-2.5 text-left border transition-all
-                    ${selected === op.type
-                      ? 'border-brand-500 bg-brand-600/20'
-                      : 'border-slate-700 hover:border-slate-600 bg-slate-800/50'}`}
-                >
-                  <op.icon size={14} className={`mb-1.5 ${cat.color}`} />
-                  <p className="text-xs font-medium text-slate-200 leading-tight">{op.label}</p>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+      {/* Batch upload */}
+      <div className="card p-5">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Layers size={18} className="text-indigo-400" /> Batch Upload
+        </h2>
+        <BatchUpload onUploaded={(files) => toast.success(`${files.length} files ready`)} />
+      </div>
+    </main>
   )
 }

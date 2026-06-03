@@ -1,86 +1,59 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { listJobs, downloadUrl } from '../api/filerApi'
-import { Download, RefreshCw, CheckCircle2, XCircle, Clock, Loader2 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Clock, Download, CheckCircle, XCircle, Loader } from 'lucide-react'
 
-const STATUS_STYLES = {
-  COMPLETED:  { color: 'text-green-400',  bg: 'bg-green-500/10',  icon: CheckCircle2 },
-  FAILED:     { color: 'text-red-400',    bg: 'bg-red-500/10',    icon: XCircle },
-  PROCESSING: { color: 'text-brand-400',  bg: 'bg-brand-500/10',  icon: Loader2 },
-  PENDING:    { color: 'text-amber-400',  bg: 'bg-amber-500/10',  icon: Clock },
+const STATUS_ICON = {
+  COMPLETED: <CheckCircle size={16} className="text-emerald-400" />,
+  FAILED: <XCircle size={16} className="text-red-400" />,
+  PROCESSING: <Loader size={16} className="text-indigo-400 animate-spin" />,
+  PENDING: <Loader size={16} className="text-slate-400" />,
+}
+
+const STATUS_BADGE = {
+  COMPLETED: 'bg-emerald-900/40 text-emerald-400 border border-emerald-800',
+  FAILED: 'bg-red-900/40 text-red-400 border border-red-800',
+  PROCESSING: 'bg-indigo-900/40 text-indigo-400 border border-indigo-800',
+  PENDING: 'bg-slate-800 text-slate-400 border border-slate-700',
 }
 
 export default function HistoryPage() {
-  const [jobs, setJobs]       = useState([])
-  const [loading, setLoading] = useState(true)
+  const [jobs, setJobs] = useState([])
 
-  const load = async () => {
-    setLoading(true)
-    try {
-      const { data } = await listJobs()
-      setJobs(data.data ?? [])
-    } catch {}
-    setLoading(false)
-  }
-
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    listJobs().then(setJobs).catch(() => {})
+  }, [])
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Job History</h2>
-        <button onClick={load} className="btn-ghost flex items-center gap-1.5 text-sm">
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
-        </button>
+    <main className="max-w-5xl mx-auto px-4 py-10 space-y-6">
+      <div className="flex items-center gap-3">
+        <Clock className="text-indigo-400" size={28} />
+        <h1 className="text-2xl font-bold text-white">Conversion History</h1>
       </div>
 
-      {loading && jobs.length === 0 ? (
-        <div className="text-center py-20 text-slate-500">Loading&hellip;</div>
-      ) : jobs.length === 0 ? (
-        <div className="text-center py-20 text-slate-500">No jobs yet. Upload a file to get started.</div>
+      {jobs.length === 0 ? (
+        <p className="text-center text-slate-500 py-20">No conversions yet.</p>
       ) : (
         <div className="space-y-3">
-          {jobs.map((job, i) => {
-            const s = STATUS_STYLES[job.status] ?? STATUS_STYLES.PENDING
-            const Icon = s.icon
-            return (
-              <motion.div
-                key={job.jobId}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="card flex items-center gap-4"
-              >
-                <div className={`w-10 h-10 rounded-xl ${ s.bg } flex items-center justify-center flex-shrink-0`}>
-                  <Icon size={18} className={`${ s.color } ${ job.status === 'PROCESSING' || job.status === 'PENDING' ? 'animate-spin' : '' }`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm">{job.conversionType?.replace(/_/g, ' ')}</p>
-                  <p className="text-xs text-slate-500 font-mono truncate">{job.jobId}</p>
-                  {job.errorMessage && (
-                    <p className="text-xs text-red-400 mt-0.5 truncate">{job.errorMessage}</p>
-                  )}
-                </div>
-                <div className="text-right flex-shrink-0 space-y-1">
-                  <span className={`badge ${ s.bg } ${ s.color }`}>{job.status}</span>
-                  {job.progress != null && job.status !== 'COMPLETED' && job.status !== 'FAILED' && (
-                    <p className="text-xs text-slate-500">{job.progress}%</p>
-                  )}
-                  {job.status === 'COMPLETED' && job.downloadUrl && (
-                    <a
-                      href={job.downloadUrl}
-                      download
-                      className="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300"
-                    >
-                      <Download size={12} /> Download
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            )
-          })}
+          {jobs.map(job => (
+            <div key={job.jobId} className="card p-4 flex items-center gap-4">
+              {STATUS_ICON[job.status] ?? STATUS_ICON.PENDING}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-white truncate">{job.conversionType}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{job.jobId}</p>
+              </div>
+              <span className={`text-xs px-2 py-1 rounded-full ${STATUS_BADGE[job.status] ?? STATUS_BADGE.PENDING}`}>
+                {job.status}
+              </span>
+              {job.status === 'COMPLETED' && job.outputFileId && (
+                <a href={downloadUrl(job.outputFileId)} download
+                  className="btn-primary flex items-center gap-1.5 px-3 py-1.5 text-sm">
+                  <Download size={14} /> Download
+                </a>
+              )}
+            </div>
+          ))}
         </div>
       )}
-    </div>
+    </main>
   )
 }

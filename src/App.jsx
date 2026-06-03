@@ -1,22 +1,34 @@
-import React, { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
+import { AuthProvider } from './context/AuthContext'
 import Header from './components/Header'
 import HomePage from './pages/HomePage'
 import HistoryPage from './pages/HistoryPage'
+import StatsPage from './pages/StatsPage'
+import PresetsPage from './pages/PresetsPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/history" element={<HistoryPage />} />
-        </Routes>
-      </main>
-      <footer className="text-center py-4 text-slate-600 text-sm border-t border-slate-800">
-        Filer &mdash; File Transformation Studio &copy; {new Date().getFullYear()}
-      </footer>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-slate-950 text-slate-100">
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/stats" element={<StatsPage />} />
+            <Route path="/presets" element={<PresetsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Routes>
+        </div>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{ style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid #334155' } }}
+        />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

@@ -1,36 +1,66 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Layers, History } from 'lucide-react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 export default function Header() {
-  const { pathname } = useLocation()
-  const nav = [
-    { to: '/',        label: 'Convert',  icon: Layers },
-    { to: '/history', label: 'History',  icon: History },
-  ]
+  const { user, logout, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  const navCls = ({ isActive }) =>
+    `text-sm px-3 py-1.5 rounded-lg transition-colors ${
+      isActive ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+    }`
+
   return (
-    <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
-            <Layers size={18} className="text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">Filer</span>
+    <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
+        <Link to="/" className="flex items-center gap-2 font-bold text-white mr-2">
+          <Zap size={20} className="text-indigo-400" />
+          Filer
         </Link>
-        <nav className="flex gap-1">
-          {nav.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              to={to}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                ${ pathname === to
-                  ? 'bg-brand-600/20 text-brand-400'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' }`}
-            >
-              <Icon size={15} />{label}
-            </Link>
-          ))}
+
+        <nav className="flex items-center gap-1">
+          <NavLink to="/" end className={navCls}>
+            <span className="flex items-center gap-1.5">Convert</span>
+          </NavLink>
+          <NavLink to="/history" className={navCls}>
+            <span className="flex items-center gap-1.5"><Clock size={14} />History</span>
+          </NavLink>
+          <NavLink to="/stats" className={navCls}>
+            <span className="flex items-center gap-1.5"><BarChart2 size={14} />Stats</span>
+          </NavLink>
+          {isAuthenticated && (
+            <NavLink to="/presets" className={navCls}>
+              <span className="flex items-center gap-1.5"><Bookmark size={14} />Presets</span>
+            </NavLink>
+          )}
         </nav>
+
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          {isAuthenticated ? (
+            <>
+              <span className="text-sm text-slate-400 hidden sm:block">{user?.username}</span>
+              <button
+                onClick={() => { logout(); navigate('/') }}
+                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <LogOut size={14} /> Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login"
+                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                <LogIn size={14} /> Sign in
+              </Link>
+              <Link to="/register" className="btn-primary text-sm px-3 py-1.5 flex items-center gap-1.5">
+                <UserPlus size={14} /> Register
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   )
