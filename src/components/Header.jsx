@@ -1,11 +1,14 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus, Activity, FolderOpen, History, User, Key, Shield } from 'lucide-react'
+import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus, Activity, FolderOpen, History, User, Key, Shield, GitBranch } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useTranslation } from 'react-i18next'
 import ThemeToggle from './ThemeToggle'
+import LanguageToggle from './LanguageToggle'
 
 export default function Header() {
   const { user, logout, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const navCls = ({ isActive }) =>
     `text-sm px-3 py-1.5 rounded-lg transition-colors ${
@@ -22,43 +25,47 @@ export default function Header() {
 
         <nav className="flex items-center gap-1">
           <NavLink to="/" end className={navCls}>
-            <span className="flex items-center gap-1.5">Convert</span>
+            <span className="flex items-center gap-1.5">{t('nav.home')}</span>
           </NavLink>
           <NavLink to="/stats" className={navCls}>
-            <span className="flex items-center gap-1.5"><BarChart2 size={14} />Stats</span>
+            <span className="flex items-center gap-1.5"><BarChart2 size={14} />{t('nav.stats')}</span>
           </NavLink>
           <NavLink to="/health" className={navCls}>
-            <span className="flex items-center gap-1.5"><Activity size={14} />Health</span>
+            <span className="flex items-center gap-1.5"><Activity size={14} />{t('nav.health')}</span>
           </NavLink>
           <NavLink to="/files" className={navCls}>
-            <span className="flex items-center gap-1.5"><FolderOpen size={14} />Files</span>
+            <span className="flex items-center gap-1.5"><FolderOpen size={14} />{t('nav.files')}</span>
           </NavLink>
           <NavLink to="/jobs" className={navCls}>
-            <span className="flex items-center gap-1.5"><History size={14} />Jobs</span>
+            <span className="flex items-center gap-1.5"><History size={14} />{t('nav.jobs')}</span>
+          </NavLink>
+          <NavLink to="/pipeline" className={navCls}>
+            <span className="flex items-center gap-1.5"><GitBranch size={14} />{t('nav.pipeline')}</span>
           </NavLink>
           {isAuthenticated && (
             <NavLink to="/presets" className={navCls}>
-              <span className="flex items-center gap-1.5"><Bookmark size={14} />Presets</span>
+              <span className="flex items-center gap-1.5"><Bookmark size={14} />{t('nav.presets')}</span>
             </NavLink>
           )}
           {isAuthenticated && (
             <NavLink to="/profile" className={navCls}>
-              <span className="flex items-center gap-1.5"><User size={14} />Profile</span>
+              <span className="flex items-center gap-1.5"><User size={14} />{t('nav.profile')}</span>
             </NavLink>
           )}
           {isAuthenticated && (
             <NavLink to="/apikeys" className={navCls}>
-              <span className="flex items-center gap-1.5"><Key size={14} />API Keys</span>
+              <span className="flex items-center gap-1.5"><Key size={14} />{t('nav.apikeys')}</span>
             </NavLink>
           )}
           {isAuthenticated && user?.role === 'ADMIN' && (
             <NavLink to="/admin" className={navCls}>
-              <span className="flex items-center gap-1.5"><Shield size={14} />Admin</span>
+              <span className="flex items-center gap-1.5"><Shield size={14} />{t('nav.admin')}</span>
             </NavLink>
           )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
           {isAuthenticated ? (
             <>
@@ -67,17 +74,17 @@ export default function Header() {
                 onClick={() => { logout(); navigate('/') }}
                 className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               >
-                <LogOut size={14} /> Sign out
+                <LogOut size={14} /> {t('common.logout')}
               </button>
             </>
           ) : (
             <>
               <Link to="/login"
                 className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-                <LogIn size={14} /> Sign in
+                <LogIn size={14} /> {t('common.login')}
               </Link>
               <Link to="/register" className="btn-primary text-sm px-3 py-1.5 flex items-center gap-1.5">
-                <UserPlus size={14} /> Register
+                <UserPlus size={14} /> {t('common.register')}
               </Link>
             </>
           )}

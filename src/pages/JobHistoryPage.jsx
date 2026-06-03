@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Download, RefreshCw, Clock, CheckCircle, XCircle, Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const STATUS_ICON = {
   COMPLETED: <CheckCircle size={16} className="text-green-400" />,
@@ -10,6 +11,7 @@ const STATUS_ICON = {
 }
 
 export default function JobHistoryPage() {
+  const { t } = useTranslation()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -29,7 +31,7 @@ export default function JobHistoryPage() {
     <div className="min-h-screen bg-slate-900 text-white py-10 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Job History</h1>
+          <h1 className="text-2xl font-bold">{t('jobs.title')}</h1>
           <button onClick={fetchJobs} className="flex items-center gap-2 px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors text-sm">
             <RefreshCw size={16} />Refresh
           </button>

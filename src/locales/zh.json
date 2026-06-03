@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "首页",
+    "files": "文件",
+    "jobs": "任务",
+    "stats": "统计",
+    "presets": "预设",
+    "profile": "我的",
+    "apikeys": "API密钥",
+    "admin": "管理员",
+    "health": "系统状态",
+    "pipeline": "流水线"
+  },
+  "common": {
+    "upload": "上传文件",
+    "convert": "开始转换",
+    "download": "下载",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "copy": "复制",
+    "refresh": "刷新",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "error": "错误",
+    "success": "成功",
+    "darkMode": "深色模式",
+    "lightMode": "浅色模式",
+    "language": "语言",
+    "login": "登录",
+    "logout": "退出",
+    "register": "注册"
+  },
+  "home": {
+    "title": "Filer — 文件转换工具",
+    "subtitle": "免费开源的文件转换、压缩与处理工具",
+    "selectType": "选择转换类型",
+    "dropzone": "拖拽文件到此处",
+    "browse": "选择文件",
+    "categories": {
+      "imageFormats": "图片格式转换",
+      "imageEdit": "图片编辑",
+      "imageFilters": "图片滤镜",
+      "imageEnhance": "图片增强",
+      "pdfTools": "PDF工具",
+      "ocr": "文字识别",
+      "qrBarcode": "二维码/条码",
+      "dataFormats": "数据格式",
+      "office": "办公文档",
+      "archive": "压缩档案",
+      "fileSecurity": "文件加密",
+      "font": "字体",
+      "svg": "SVG",
+      "videoAudio": "视频音频",
+      "fileUtils": "文件工具",
+      "devTools": "开发工具"
+    }
+  },
+  "jobs": {
+    "title": "任务历史",
+    "status": {
+      "completed": "已完成",
+      "failed": "失败",
+      "pending": "等待中",
+      "processing": "处理中"
+    }
+  },
+  "stats": {
+    "title": "使用统计",
+    "total": "总任务数",
+    "completed": "已完成",
+    "failed": "失败",
+    "overtime": "转换趋势",
+    "byType": "热门转换类型"
+  },
+  "files": {
+    "title": "文件管理",
+    "name": "文件名",
+    "size": "大小",
+    "uploaded": "上传时间",
+    "actions": "操作"
+  },
+  "profile": {
+    "title": "个人资料",
+    "account": "账户信息",
+    "username": "用户名",
+    "email": "邮箱",
+    "role": "角色",
+    "changePassword": "修改密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码"
+  },
+  "pipeline": {
+    "title": "转换流水线",
+    "subtitle": "对一个文件链式执行多步操作",
+    "addStep": "添加步骤",
+    "removeStep": "删除",
+    "step": "步骤",
+    "run": "运行流水线",
+    "running": "执行中...",
+    "maxSteps": "最多10个步骤",
+    "selectOp": "选择操作",
+    "result": "流水线执行完成！",
+    "download": "下载结果"
+  }
+}

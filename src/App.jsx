@@ -13,6 +13,7 @@ import JobHistoryPage from './pages/JobHistoryPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminPage   from './pages/AdminPage'
 import ApiKeysPage from './pages/ApiKeysPage'
+import PipelinePage from './pages/PipelinePage'
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="profile" element={<ProfilePage />} />
             <Route path="admin"   element={<AdminPage />} />
             <Route path="apikeys" element={<ApiKeysPage />} />
+            <Route path="pipeline" element={<PipelinePage />} />
           </Routes>
         </div>
         <Toaster

@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Home",
+    "files": "Files",
+    "jobs": "Jobs",
+    "stats": "Stats",
+    "presets": "Presets",
+    "profile": "Profile",
+    "apikeys": "API Keys",
+    "admin": "Admin",
+    "health": "Health",
+    "pipeline": "Pipeline"
+  },
+  "common": {
+    "upload": "Upload File",
+    "convert": "Convert",
+    "download": "Download",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "copy": "Copy",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "noData": "No data yet",
+    "error": "Error",
+    "success": "Success",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "language": "Language",
+    "login": "Log in",
+    "logout": "Log out",
+    "register": "Register"
+  },
+  "home": {
+    "title": "Filer — File Transformation",
+    "subtitle": "Convert, compress, and transform your files — free and open source",
+    "selectType": "Select a conversion type",
+    "dropzone": "Drag & drop your file here",
+    "browse": "Browse files",
+    "categories": {
+      "imageFormats": "Image Formats",
+      "imageEdit": "Image Edit",
+      "imageFilters": "Image Filters",
+      "imageEnhance": "Image Enhance",
+      "pdfTools": "PDF Tools",
+      "ocr": "OCR",
+      "qrBarcode": "QR & Barcode",
+      "dataFormats": "Data Formats",
+      "office": "Office & Documents",
+      "archive": "Archive",
+      "fileSecurity": "File Security",
+      "font": "Font",
+      "svg": "SVG",
+      "videoAudio": "Video & Audio",
+      "fileUtils": "File Utilities",
+      "devTools": "Developer Tools"
+    }
+  },
+  "jobs": {
+    "title": "Job History",
+    "status": {
+      "completed": "Completed",
+      "failed": "Failed",
+      "pending": "Pending",
+      "processing": "Processing"
+    }
+  },
+  "stats": {
+    "title": "Usage Stats",
+    "total": "Total Jobs",
+    "completed": "Completed",
+    "failed": "Failed",
+    "overtime": "Conversions Over Time",
+    "byType": "Top Conversion Types"
+  },
+  "files": {
+    "title": "File Manager",
+    "name": "Name",
+    "size": "Size",
+    "uploaded": "Uploaded",
+    "actions": "Actions"
+  },
+  "profile": {
+    "title": "Profile",
+    "account": "Account Info",
+    "username": "Username",
+    "email": "Email",
+    "role": "Role",
+    "changePassword": "Change Password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password"
+  },
+  "pipeline": {
+    "title": "Conversion Pipeline",
+    "subtitle": "Chain multiple operations on a single file",
+    "addStep": "Add Step",
+    "removeStep": "Remove",
+    "step": "Step",
+    "run": "Run Pipeline",
+    "running": "Running...",
+    "maxSteps": "Maximum 10 steps",
+    "selectOp": "Select operation",
+    "result": "Pipeline complete!",
+    "download": "Download Result"
+  }
+}
