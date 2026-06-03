@@ -1,76 +1,99 @@
-import React, { useEffect, useState } from 'react'
-import { pollJob, downloadUrl } from '../api/filerApi'
-import { motion } from 'framer-motion'
-import { Download, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { CheckCircle, XCircle, Loader, Download, Wifi, WifiOff } from 'lucide-react'
+import { downloadUrl, getJob } from '../api/filerApi'
+import { useWebSocket } from '../hooks/useWebSocket'
 
-export default function JobTracker({ job: initialJob }) {
-  const [job, setJob] = useState(initialJob)
+export default function JobTracker({ jobId }) {
+  const [job, setJob] = useState(null)
+  const [usePoll, setUsePoll] = useState(false)
+
+  const { connected } = useWebSocket(jobId, (update) => {
+    setJob(update)
+  })
+
+  // Fallback polling when WebSocket not connected after 2s
+  useEffect(() => {
+    if (!jobId) return
+    const fallbackTimer = setTimeout(() => {
+      if (!connected) setUsePoll(true)
+    }, 2000)
+    return () => clearTimeout(fallbackTimer)
+  }, [jobId, connected])
 
   useEffect(() => {
-    if (!initialJob) return
-    setJob(initialJob)
-    if (initialJob.status === 'COMPLETED' || initialJob.status === 'FAILED') return
-    const stop = pollJob(initialJob.jobId, setJob)
-    return stop
-  }, [initialJob?.jobId])
+    if (!usePoll || !jobId) return
+    let active = true
+    const poll = async () => {
+      try {
+        const data = await getJob(jobId)
+        if (active) setJob(data)
+        if (data.status === 'COMPLETED' || data.status === 'FAILED') return
+        setTimeout(poll, 1500)
+      } catch {}
+    }
+    poll()
+    return () => { active = false }
+  }, [usePoll, jobId])
 
-  if (!job) return null
+  if (!jobId || !job) return null
 
-  const statusColor = {
-    PENDING:    'text-amber-400',
-    PROCESSING: 'text-brand-400',
-    COMPLETED:  'text-green-400',
-    FAILED:     'text-red-400',
-  }[job.status] ?? 'text-slate-400'
-
-  const StatusIcon = {
-    COMPLETED:  CheckCircle2,
-    FAILED:     XCircle,
-    PROCESSING: Loader2,
-    PENDING:    Loader2,
-  }[job.status] ?? Loader2
+  const progress = job.progress ?? 0
+  const isDone = job.status === 'COMPLETED'
+  const isFailed = job.status === 'FAILED'
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-      className="card border border-slate-700 space-y-4"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-slate-500 font-mono">{job.jobId.slice(0, 16)}&hellip;</p>
-          <p className="font-semibold text-sm">{job.conversionType?.replace(/_/g, ' ')}</p>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        className="card p-5 mt-4 space-y-3"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {isFailed ? (
+              <XCircle className="text-red-400" size={20} />
+            ) : isDone ? (
+              <CheckCircle className="text-emerald-400" size={20} />
+            ) : (
+              <Loader className="text-indigo-400 animate-spin" size={20} />
+            )}
+            <span className="font-medium text-white">
+              {isFailed ? 'Conversion failed' : isDone ? 'Done!' : 'Converting...'}
+            </span>
+          </div>
+          <span className="text-xs text-slate-500 flex items-center gap-1">
+            {connected ? <Wifi size={12} className="text-emerald-400" /> : <WifiOff size={12} />}
+            {connected ? 'live' : 'polling'}
+          </span>
         </div>
-        <span className={`flex items-center gap-1.5 text-sm font-semibold ${ statusColor }`}>
-          <StatusIcon size={16} className={job.status === 'PROCESSING' || job.status === 'PENDING' ? 'animate-spin' : ''} />
-          {job.status}
-        </span>
-      </div>
 
-      {(job.status === 'PROCESSING' || job.status === 'PENDING') && (
-        <div className="space-y-1">
-          <div className="w-full bg-slate-700 rounded-full h-2">
-            <div
-              className="bg-brand-500 h-2 rounded-full transition-all duration-700"
-              style={{ width: `${job.progress ?? 0}%` }}
+        {!isDone && !isFailed && (
+          <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
+            <motion.div
+              className="h-2 bg-indigo-500 rounded-full"
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.4 }}
             />
           </div>
-          <p className="text-xs text-slate-500 text-right">{job.progress ?? 0}%</p>
-        </div>
-      )}
+        )}
 
-      {job.status === 'FAILED' && (
-        <p className="text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">{job.errorMessage}</p>
-      )}
+        {isFailed && job.errorMessage && (
+          <p className="text-sm text-red-400">{job.errorMessage}</p>
+        )}
 
-      {job.status === 'COMPLETED' && job.downloadUrl && (
-        <a
-          href={job.downloadUrl}
-          download
-          className="btn-primary flex items-center justify-center gap-2 text-sm"
-        >
-          <Download size={16} /> Download Result
-        </a>
-      )}
-    </motion.div>
+        {isDone && job.outputFileId && (
+          <a
+            href={downloadUrl(job.outputFileId)}
+            className="btn-primary flex items-center justify-center gap-2 py-2.5"
+            download
+          >
+            <Download size={16} />
+            Download result
+          </a>
+        )}
+      </motion.div>
+    </AnimatePresence>
   )
 }
