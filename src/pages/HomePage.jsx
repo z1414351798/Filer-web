@@ -89,6 +89,8 @@ const CATEGORIES = [
       { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
       { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
       { label: 'PDF → DOCX', type: 'PDF_TO_DOCX' },
+      { label: 'PDF Thumbnail', type: 'PDF_THUMBNAIL' },
+      { label: 'Markdown → DOCX', type: 'MARKDOWN_TO_DOCX' },
     ]
   },
   {
@@ -104,6 +106,7 @@ const CATEGORIES = [
       { label: 'Generate QR', type: 'QR_GENERATE' },
       { label: 'Generate Barcode', type: 'BARCODE_GENERATE' },
       { label: 'Scan QR/Barcode', type: 'QR_SCAN' },
+      { label: 'Read Barcode', type: 'BARCODE_READ' },
     ]
   },
   {

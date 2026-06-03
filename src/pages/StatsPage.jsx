@@ -1,91 +1,89 @@
 import { useEffect, useState } from 'react'
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
-} from 'recharts'
-import { listJobs } from '../api/filerApi'
-import { BarChart2 } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
+import { Loader } from 'lucide-react'
 
-const COLORS = ['#6366f1','#22d3ee','#f59e0b','#10b981','#f43f5e','#8b5cf6','#06b6d4','#84cc16']
+const COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#f97316','#84cc16','#ef4444','#a855f7']
 
 export default function StatsPage() {
-  const [jobs, setJobs] = useState([])
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [days, setDays] = useState(30)
 
   useEffect(() => {
-    listJobs().then(setJobs).catch(() => {})
-  }, [])
+    const token = localStorage.getItem('token')
+    fetch(`/api/stats/conversions?days=${days}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { setStats(d); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [days])
 
-  const byType = jobs.reduce((acc, j) => {
-    acc[j.conversionType] = (acc[j.conversionType] || 0) + 1
-    return acc
-  }, {})
+  if (loading) return (
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <Loader size={32} className="animate-spin text-blue-400" />
+    </div>
+  )
 
-  const byStatus = jobs.reduce((acc, j) => {
-    acc[j.status] = (acc[j.status] || 0) + 1
-    return acc
-  }, {})
-
-  const typeData = Object.entries(byType)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([name, count]) => ({ name: name.replace(/_/g, ' '), count }))
-
-  const statusData = Object.entries(byStatus)
-    .map(([name, value]) => ({ name, value }))
+  const byType = stats?.byType ?? []
+  const byDate = stats?.byDate ?? []
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
-      <div className="flex items-center gap-3">
-        <BarChart2 className="text-indigo-400" size={28} />
-        <h1 className="text-2xl font-bold text-white">Conversion Stats</h1>
-      </div>
+    <div className="min-h-screen bg-slate-900 text-white py-10 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold">Usage Stats</h1>
+          <select value={days} onChange={e => setDays(Number(e.target.value))}
+            className="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm">
+            <option value={7}>Last 7 days</option>
+            <option value={30}>Last 30 days</option>
+            <option value={90}>Last 90 days</option>
+          </select>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { label: 'Total Jobs', value: jobs.length },
-          { label: 'Completed', value: byStatus['COMPLETED'] || 0 },
-          { label: 'Failed', value: byStatus['FAILED'] || 0 }
-        ].map(({ label, value }) => (
-          <div key={label} className="card p-6">
-            <p className="text-slate-400 text-sm">{label}</p>
-            <p className="text-3xl font-bold text-white mt-1">{value}</p>
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {[
+            ['Total Jobs',     stats?.totalJobs     ?? 0, 'text-blue-400'],
+            ['Completed',      stats?.completedJobs ?? 0, 'text-green-400'],
+            ['Failed',         stats?.failedJobs    ?? 0, 'text-red-400'],
+          ].map(([label, val, cls]) => (
+            <div key={label} className="bg-slate-800 rounded-xl p-6 text-center">
+              <div className={`text-3xl font-bold ${cls}`}>{val}</div>
+              <div className="text-slate-400 text-sm mt-1">{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {byDate.length > 0 && (
+          <div className="bg-slate-800 rounded-xl p-6 mb-6">
+            <h2 className="font-semibold mb-4">Conversions Over Time</h2>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={byDate}>
+                <XAxis dataKey="date" tick={{ fill:'#94a3b8', fontSize:11 }} />
+                <YAxis tick={{ fill:'#94a3b8', fontSize:11 }} />
+                <Tooltip contentStyle={{ background:'#1e293b', border:'none', borderRadius:'8px' }} />
+                <Bar dataKey="count" fill="#3b82f6" radius={[4,4,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-        ))}
+        )}
+
+        {byType.length > 0 && (
+          <div className="bg-slate-800 rounded-xl p-6">
+            <h2 className="font-semibold mb-4">Top Conversion Types</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie data={byType.slice(0,10)} dataKey="count" nameKey="type" cx="50%" cy="50%" outerRadius={110} label={({type}) => type?.replace(/_/g,' ')}>
+                  {byType.slice(0,10).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                </Pie>
+                <Tooltip contentStyle={{ background:'#1e293b', border:'none', borderRadius:'8px' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {!stats && (
+          <div className="text-center py-20 text-slate-400">No stats available yet.</div>
+        )}
       </div>
-
-      {typeData.length > 0 && (
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Top Conversion Types</h2>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={typeData} margin={{ bottom: 60 }}>
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }}
-                angle={-30} textAnchor="end" interval={0} />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                labelStyle={{ color: '#f1f5f9' }} itemStyle={{ color: '#a5b4fc' }} />
-              <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {statusData.length > 0 && (
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Status Breakdown</h2>
-          <ResponsiveContainer width="100%" height={260}>
-            <PieChart>
-              <Pie data={statusData} dataKey="value" nameKey="name"
-                cx="50%" cy="50%" outerRadius={100} label>
-                {statusData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }} />
-              <Legend wrapperStyle={{ color: '#94a3b8' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-    </main>
+    </div>
   )
 }

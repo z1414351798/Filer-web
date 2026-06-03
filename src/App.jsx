@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import HealthPage from './pages/HealthPage'
 import FileManagerPage from './pages/FileManagerPage'
+import JobHistoryPage from './pages/JobHistoryPage'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="health" element={<HealthPage />} />
             <Route path="files" element={<FileManagerPage />} />
+            <Route path="jobs"  element={<JobHistoryPage />} />
           </Routes>
         </div>
         <Toaster

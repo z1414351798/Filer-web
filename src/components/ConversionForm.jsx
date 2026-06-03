@@ -65,6 +65,10 @@ const FIELDS = {
   // Wave 6
   PDF_TO_DOCX:          [],
   VIDEO_CONCAT:         ['fileIds'],
+  // Wave 7
+  BARCODE_READ:         [],
+  MARKDOWN_TO_DOCX:     [],
+  PDF_THUMBNAIL:        ['pageIndex'],
   VIDEO_RESIZE:         ['targetWidth', 'targetHeight'],
   AUDIO_NORMALIZE:      [],
   AUDIO_FADE:           ['fadeInDuration', 'fadeOutDuration'],
@@ -160,6 +164,8 @@ export default function ConversionForm({ type, file, onSubmit }) {
     setLoading(true)
     try {
       const params = Object.fromEntries(needed.map(k => [k, fields[k]]))
+      if (fields.notifyEmail) params.notifyEmail = fields.notifyEmail
+      if (fields.webhookUrl)  params.webhookUrl  = fields.webhookUrl
       await onSubmit(params)
       toast.success('Job queued!')
     } catch (err) {
@@ -373,6 +379,36 @@ export default function ConversionForm({ type, file, onSubmit }) {
           />
         </div>
       )}
+
+      {/* Notifications */}
+      <details className="group">
+        <summary className="cursor-pointer text-sm text-slate-400 hover:text-slate-200 select-none flex items-center gap-2">
+          <span className="group-open:rotate-90 transition-transform inline-block">▶</span>
+          Notifications (optional)
+        </summary>
+        <div className="mt-3 space-y-3 pl-4 border-l border-slate-700">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Notify by email when done</label>
+            <input
+              type="email"
+              value={fields.notifyEmail || ''}
+              onChange={e => set('notifyEmail', e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Webhook URL (POST on completion)</label>
+            <input
+              type="url"
+              value={fields.webhookUrl || ''}
+              onChange={e => set('webhookUrl', e.target.value)}
+              placeholder="https://your-server.com/webhook"
+              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </details>
 
       <button type="submit" disabled={loading}
         className="btn-primary w-full flex items-center justify-center gap-2 py-2.5">
