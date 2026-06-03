@@ -31,6 +31,19 @@ const FIELDS = {
   VIDEO_TO_GIF:         ['videoSecond', 'videoDuration', 'videoFps'],
   AUDIO_CONVERT:        ['targetFormat'],
   PDF_PAGE_EXTRACT:     ['fromPage', 'toPage'],
+  // Video extras
+  VIDEO_TRIM:         ['startSec', 'durationSec'],
+  VIDEO_COMPRESS:     ['quality'],
+  // Audio extras
+  AUDIO_TRIM:         ['startSec', 'durationSec'],
+  // File encryption
+  FILE_AES_ENCRYPT:   ['password'],
+  FILE_AES_DECRYPT:   ['password'],
+  // Developer tools
+  HASH_FILE:          ['hashAlgorithm'],
+  // Image extras
+  IMAGE_MEME:         ['topText', 'bottomText'],
+  IMAGE_COMPARE:      ['diffFileId'],
 }
 
 const DEFAULTS = {
@@ -56,6 +69,9 @@ const DEFAULTS = {
   videoSecond: 1, videoDuration: 5, videoFps: 10,
   targetFormat: 'mp3',
   fromPage: 1, toPage: 5,
+  startSec: 0, durationSec: 30,
+  hashAlgorithm: 'SHA-256',
+  topText: '', bottomText: '',
 }
 
 export default function ConversionForm({ type, file, onSubmit }) {
@@ -103,6 +119,8 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('videoFps')       && <NumField label="FPS (max 15)"      value={fields.videoFps}       onChange={v => set('videoFps', v)}       min={1} max={15} />}
       {needed.includes('fromPage')       && <NumField label="From page (1-based)" value={fields.fromPage}     onChange={v => set('fromPage', v)}       min={1} />}
       {needed.includes('toPage')         && <NumField label="To page (0 = last)"  value={fields.toPage}       onChange={v => set('toPage', v)}         min={0} />}
+      {needed.includes('startSec')    && <NumField label="Start second"         value={fields.startSec}    onChange={v => set('startSec', v)}    min={0} />}
+      {needed.includes('durationSec') && <NumField label="Duration (seconds)"   value={fields.durationSec} onChange={v => set('durationSec', v)} min={1} />}
 
       {/* Sliders */}
       {needed.includes('quality') && (
@@ -132,6 +150,8 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('qrContent')      && <TextField label="Text / URL to encode" value={fields.qrContent} onChange={v => set('qrContent', v)} />}
       {needed.includes('barcodeContent') && <TextField label="Barcode content"  value={fields.barcodeContent} onChange={v => set('barcodeContent', v)} />}
       {needed.includes('diffFileId')     && <TextField label="Second file ID (for diff)" value={fields.diffFileId} onChange={v => set('diffFileId', v)} placeholder="Upload 2nd file, paste its fileId here" />}
+      {needed.includes('topText')    && <TextField label="Top text"    value={fields.topText}    onChange={v => set('topText', v)}    placeholder="TOP TEXT" />}
+      {needed.includes('bottomText') && <TextField label="Bottom text" value={fields.bottomText} onChange={v => set('bottomText', v)} placeholder="BOTTOM TEXT" />}
       {needed.includes('borderColor')    && (
         <label className="block">
           <span className="text-xs text-slate-400 mb-1 block">Border color</span>
@@ -161,6 +181,14 @@ export default function ConversionForm({ type, file, onSubmit }) {
             { value: 'CODE_128', label: 'Code 128' },
             { value: 'EAN_13',   label: 'EAN-13' },
             { value: 'QR_CODE',  label: 'QR Code' },
+          ]} />
+      )}
+      {needed.includes('hashAlgorithm') && (
+        <SelectField label="Hash Algorithm" value={fields.hashAlgorithm} onChange={v => set('hashAlgorithm', v)}
+          options={[
+            { value: 'SHA-256', label: 'SHA-256 (recommended)' },
+            { value: 'SHA-512', label: 'SHA-512' },
+            { value: 'MD5',     label: 'MD5' },
           ]} />
       )}
       {needed.includes('targetFormat') && (

@@ -11,7 +11,7 @@ import { createJob } from '../api/filerApi'
 import toast from 'react-hot-toast'
 import {
   Image, FileText, Eye, QrCode, Table, File,
-  Archive, Info, ChevronDown, Layers, Video, Code
+  Archive, Info, ChevronDown, Layers, Video, Code, Lock
 } from 'lucide-react'
 
 const CATEGORIES = [
@@ -56,6 +56,9 @@ const CATEGORIES = [
       { label: 'Add Border', type: 'IMAGE_BORDER' },
       { label: 'Round Corners', type: 'IMAGE_ROUND_CORNERS' },
       { label: 'Color Palette', type: 'IMAGE_COLOR_PALETTE' },
+      { label: 'ASCII Art', type: 'IMAGE_ASCII_ART' },
+      { label: 'Meme Generator', type: 'IMAGE_MEME' },
+      { label: 'Compare Images', type: 'IMAGE_COMPARE' },
     ]
   },
   {
@@ -71,6 +74,8 @@ const CATEGORIES = [
       { label: 'Decrypt PDF', type: 'PDF_DECRYPT' },
       { label: 'Compress PDF', type: 'PDF_COMPRESS' },
       { label: 'Add Page Numbers', type: 'PDF_ADD_PAGE_NUMBERS' },
+      { label: 'PDF to HTML', type: 'PDF_TO_HTML' },
+      { label: 'Linearize PDF', type: 'PDF_LINEARIZE' },
       { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
       { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
       { label: 'PDF to Text', type: 'PDF_TO_DOCX' },
@@ -105,6 +110,12 @@ const CATEGORIES = [
       { label: 'Base64 Encode', type: 'BASE64_ENCODE' },
       { label: 'Base64 Decode', type: 'BASE64_DECODE' },
       { label: 'Text Diff', type: 'TEXT_DIFF' },
+      { label: 'Excel to JSON', type: 'EXCEL_TO_JSON' },
+      { label: 'Merge CSVs', type: 'CSV_MERGE' },
+      { label: 'Hash File', type: 'HASH_FILE' },
+      { label: 'URL Encode', type: 'URL_ENCODE' },
+      { label: 'URL Decode', type: 'URL_DECODE' },
+      { label: 'Decode JWT', type: 'JWT_DECODE' },
     ]
   },
   {
@@ -134,6 +145,13 @@ const CATEGORIES = [
     ]
   },
   {
+    id: 'security', label: 'File Security', Icon: Lock,
+    ops: [
+      { label: 'AES Encrypt File', type: 'FILE_AES_ENCRYPT' },
+      { label: 'AES Decrypt File', type: 'FILE_AES_DECRYPT' },
+    ]
+  },
+  {
     id: 'svg', label: 'SVG', Icon: Code,
     ops: [
       { label: 'SVG to PNG', type: 'SVG_TO_PNG' },
@@ -145,8 +163,13 @@ const CATEGORIES = [
     ops: [
       { label: 'Extract Thumbnail', type: 'VIDEO_THUMBNAIL' },
       { label: 'Video to GIF', type: 'VIDEO_TO_GIF' },
+      { label: 'Trim Video', type: 'VIDEO_TRIM' },
+      { label: 'Compress Video', type: 'VIDEO_COMPRESS' },
+      { label: 'Convert to MP4', type: 'VIDEO_TO_MP4' },
       { label: 'Extract Audio (MP3)', type: 'VIDEO_AUDIO_EXTRACT' },
-      { label: 'Convert Audio', type: 'AUDIO_CONVERT' },
+      { label: 'Convert Audio Format', type: 'AUDIO_CONVERT' },
+      { label: 'Trim Audio', type: 'AUDIO_TRIM' },
+      { label: 'Merge Audio Files', type: 'AUDIO_MERGE' },
     ]
   },
   {
