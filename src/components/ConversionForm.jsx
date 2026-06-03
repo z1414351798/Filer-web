@@ -44,6 +44,11 @@ const FIELDS = {
   // Image extras
   IMAGE_MEME:         ['topText', 'bottomText'],
   IMAGE_COMPARE:      ['diffFileId'],
+  PDF_CROP_MARGINS:        ['cropTop', 'cropRight', 'cropBottom', 'cropLeft'],
+  PDF_REORDER_PAGES:       ['pageOrder'],
+  TEXT_CASE_CONVERT:       ['caseType'],
+  VIDEO_EXTRACT_FRAMES:    ['frameInterval'],
+  VIDEO_ADD_WATERMARK:     ['videoWatermarkText'],
 }
 
 const DEFAULTS = {
@@ -72,6 +77,11 @@ const DEFAULTS = {
   startSec: 0, durationSec: 30,
   hashAlgorithm: 'SHA-256',
   topText: '', bottomText: '',
+  cropTop: 36, cropRight: 36, cropBottom: 36, cropLeft: 36,
+  pageOrder: '1,2,3',
+  caseType: 'upper',
+  frameInterval: 5,
+  videoWatermarkText: 'FILER',
 }
 
 export default function ConversionForm({ type, file, onSubmit }) {
@@ -121,6 +131,11 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('toPage')         && <NumField label="To page (0 = last)"  value={fields.toPage}       onChange={v => set('toPage', v)}         min={0} />}
       {needed.includes('startSec')    && <NumField label="Start second"         value={fields.startSec}    onChange={v => set('startSec', v)}    min={0} />}
       {needed.includes('durationSec') && <NumField label="Duration (seconds)"   value={fields.durationSec} onChange={v => set('durationSec', v)} min={1} />}
+      {needed.includes('cropTop')      && <NumField label="Crop Top (pt)"    value={fields.cropTop}    onChange={v => set('cropTop', v)}    min={0} max={300} />}
+      {needed.includes('cropRight')    && <NumField label="Crop Right (pt)"  value={fields.cropRight}  onChange={v => set('cropRight', v)}  min={0} max={300} />}
+      {needed.includes('cropBottom')   && <NumField label="Crop Bottom (pt)" value={fields.cropBottom} onChange={v => set('cropBottom', v)} min={0} max={300} />}
+      {needed.includes('cropLeft')     && <NumField label="Crop Left (pt)"   value={fields.cropLeft}   onChange={v => set('cropLeft', v)}   min={0} max={300} />}
+      {needed.includes('frameInterval') && <NumField label="Seconds between frames" value={fields.frameInterval} onChange={v => set('frameInterval', v)} min={1} max={60} />}
 
       {/* Sliders */}
       {needed.includes('quality') && (
@@ -152,6 +167,8 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('diffFileId')     && <TextField label="Second file ID (for diff)" value={fields.diffFileId} onChange={v => set('diffFileId', v)} placeholder="Upload 2nd file, paste its fileId here" />}
       {needed.includes('topText')    && <TextField label="Top text"    value={fields.topText}    onChange={v => set('topText', v)}    placeholder="TOP TEXT" />}
       {needed.includes('bottomText') && <TextField label="Bottom text" value={fields.bottomText} onChange={v => set('bottomText', v)} placeholder="BOTTOM TEXT" />}
+      {needed.includes('pageOrder')          && <TextField label="Page order (e.g. 3,1,2)" value={fields.pageOrder}          onChange={v => set('pageOrder', v)} placeholder="3,1,2" />}
+      {needed.includes('videoWatermarkText') && <TextField label="Watermark text"           value={fields.videoWatermarkText} onChange={v => set('videoWatermarkText', v)} />}
       {needed.includes('borderColor')    && (
         <label className="block">
           <span className="text-xs text-slate-400 mb-1 block">Border color</span>
@@ -200,6 +217,17 @@ export default function ConversionForm({ type, file, onSubmit }) {
             { value: 'aac',  label: 'AAC' },
             { value: 'flac', label: 'FLAC' },
             { value: 'm4a',  label: 'M4A' },
+          ]} />
+      )}
+      {needed.includes('caseType') && (
+        <SelectField label="Target Case" value={fields.caseType} onChange={v => set('caseType', v)}
+          options={[
+            { value: 'upper',  label: 'UPPER CASE' },
+            { value: 'lower',  label: 'lower case' },
+            { value: 'title',  label: 'Title Case' },
+            { value: 'camel',  label: 'camelCase' },
+            { value: 'snake',  label: 'snake_case' },
+            { value: 'kebab',  label: 'kebab-case' },
           ]} />
       )}
 

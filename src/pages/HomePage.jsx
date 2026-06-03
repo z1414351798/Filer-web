@@ -11,7 +11,7 @@ import { createJob } from '../api/filerApi'
 import toast from 'react-hot-toast'
 import {
   Image, FileText, Eye, QrCode, Table, File,
-  Archive, Info, ChevronDown, Layers, Video, Code, Lock
+  Archive, Info, ChevronDown, Layers, Video, Code, Lock, Type
 } from 'lucide-react'
 
 const CATEGORIES = [
@@ -59,6 +59,7 @@ const CATEGORIES = [
       { label: 'ASCII Art', type: 'IMAGE_ASCII_ART' },
       { label: 'Meme Generator', type: 'IMAGE_MEME' },
       { label: 'Compare Images', type: 'IMAGE_COMPARE' },
+      { label: 'Convert to ICO', type: 'IMAGE_TO_ICO' },
     ]
   },
   {
@@ -76,6 +77,8 @@ const CATEGORIES = [
       { label: 'Add Page Numbers', type: 'PDF_ADD_PAGE_NUMBERS' },
       { label: 'PDF to HTML', type: 'PDF_TO_HTML' },
       { label: 'Linearize PDF', type: 'PDF_LINEARIZE' },
+      { label: 'Crop Margins', type: 'PDF_CROP_MARGINS' },
+      { label: 'Reorder Pages', type: 'PDF_REORDER_PAGES' },
       { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
       { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
       { label: 'PDF to Text', type: 'PDF_TO_DOCX' },
@@ -116,6 +119,11 @@ const CATEGORIES = [
       { label: 'URL Encode', type: 'URL_ENCODE' },
       { label: 'URL Decode', type: 'URL_DECODE' },
       { label: 'Decode JWT', type: 'JWT_DECODE' },
+      { label: 'CSV to HTML Table', type: 'CSV_TO_HTML' },
+      { label: 'JSON to HTML Table', type: 'JSON_TO_HTML' },
+      { label: 'Text Case Convert', type: 'TEXT_CASE_CONVERT' },
+      { label: 'SRT to VTT', type: 'SUBTITLE_SRT_TO_VTT' },
+      { label: 'VTT to SRT', type: 'VTT_TO_SRT' },
     ]
   },
   {
@@ -133,6 +141,9 @@ const CATEGORIES = [
       { label: 'Markdown to PDF', type: 'MARKDOWN_TO_PDF' },
       { label: 'Text to PDF', type: 'TEXT_TO_PDF' },
       { label: 'HTML to PDF', type: 'HTML_TO_PDF' },
+      { label: 'RTF to PDF', type: 'RTF_TO_PDF' },
+      { label: 'RTF to Text', type: 'RTF_TO_TEXT' },
+      { label: 'Merge Excel Files', type: 'EXCEL_MERGE' },
     ]
   },
   {
@@ -149,6 +160,12 @@ const CATEGORIES = [
     ops: [
       { label: 'AES Encrypt File', type: 'FILE_AES_ENCRYPT' },
       { label: 'AES Decrypt File', type: 'FILE_AES_DECRYPT' },
+    ]
+  },
+  {
+    id: 'font', label: 'Font', Icon: Type,
+    ops: [
+      { label: 'Font Preview', type: 'FONT_PREVIEW' },
     ]
   },
   {
@@ -170,6 +187,8 @@ const CATEGORIES = [
       { label: 'Convert Audio Format', type: 'AUDIO_CONVERT' },
       { label: 'Trim Audio', type: 'AUDIO_TRIM' },
       { label: 'Merge Audio Files', type: 'AUDIO_MERGE' },
+      { label: 'Extract Frames', type: 'VIDEO_EXTRACT_FRAMES' },
+      { label: 'Add Watermark to Video', type: 'VIDEO_ADD_WATERMARK' },
     ]
   },
   {

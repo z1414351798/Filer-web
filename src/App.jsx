@@ -8,6 +8,7 @@ import StatsPage from './pages/StatsPage'
 import PresetsPage from './pages/PresetsPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import HealthPage from './pages/HealthPage'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/presets" element={<PresetsPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="health" element={<HealthPage />} />
           </Routes>
         </div>
         <Toaster

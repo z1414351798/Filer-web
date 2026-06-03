@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus } from 'lucide-react'
+import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus, Activity } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
@@ -29,6 +29,9 @@ export default function Header() {
           </NavLink>
           <NavLink to="/stats" className={navCls}>
             <span className="flex items-center gap-1.5"><BarChart2 size={14} />Stats</span>
+          </NavLink>
+          <NavLink to="/health" className={navCls}>
+            <span className="flex items-center gap-1.5"><Activity size={14} />Health</span>
           </NavLink>
           {isAuthenticated && (
             <NavLink to="/presets" className={navCls}>
