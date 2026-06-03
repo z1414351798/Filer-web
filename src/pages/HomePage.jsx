@@ -63,6 +63,10 @@ const CATEGORIES = [
       { label: 'Strip EXIF Metadata', type: 'IMAGE_EXIF_STRIP' },
       { label: 'Noise Reduction', type: 'IMAGE_NOISE_REDUCE' },
       { label: 'Animated GIF from Images', type: 'IMAGE_ANIMATED_GIF' },
+      { label: 'Text → Image',    type: 'TEXT_TO_IMAGE' },
+      { label: 'Add Caption',     type: 'IMAGE_CAPTION' },
+      { label: 'QR + Logo',       type: 'QR_WITH_LOGO' },
+      { label: 'Image → Data URI', type: 'IMAGE_TO_DATA_URI' },
     ]
   },
   {
@@ -91,6 +95,7 @@ const CATEGORIES = [
       { label: 'PDF → DOCX', type: 'PDF_TO_DOCX' },
       { label: 'PDF Thumbnail', type: 'PDF_THUMBNAIL' },
       { label: 'Markdown → DOCX', type: 'MARKDOWN_TO_DOCX' },
+      { label: 'Split by N Pages', type: 'PDF_SPLIT_BY_SIZE' },
     ]
   },
   {
@@ -142,6 +147,11 @@ const CATEGORIES = [
       { label: 'XML → YAML', type: 'XML_TO_YAML' },
       { label: 'YAML → XML', type: 'YAML_TO_XML' },
       { label: 'CSV → XML', type: 'CSV_TO_XML' },
+      { label: 'Flatten JSON', type: 'JSON_FLATTEN' },
+      { label: 'Unflatten JSON', type: 'JSON_UNFLATTEN' },
+      { label: 'CSV Dedup', type: 'CSV_DEDUP' },
+      { label: 'Sort CSV', type: 'CSV_SORT' },
+      { label: 'Number Base', type: 'NUMBER_BASE_CONVERT' },
     ]
   },
   {
@@ -205,6 +215,8 @@ const CATEGORIES = [
       { id: 'PASSWORD_GENERATE',    label: 'Password Generator',     icon: '🔐' },
       { id: 'PASSPHRASE_GENERATE',  label: 'Passphrase Generator',   icon: '🗝️' },
       { id: 'PLACEHOLDER_IMAGE',    label: 'Placeholder Image',      icon: '🖼️' },
+      { id: 'ZIP_ENCRYPT',          label: 'Encrypted ZIP',          icon: '🔐' },
+      { id: 'CRON_DESCRIBE',        label: 'Cron Describe',          icon: '⏱️' },
     ].map(({ id, label }) => ({ label, type: id }))
   },
   {
@@ -227,6 +239,7 @@ const CATEGORIES = [
       { label: 'Resize Video', type: 'VIDEO_RESIZE' },
       { label: 'Normalize Audio', type: 'AUDIO_NORMALIZE' },
       { label: 'Audio Fade In/Out', type: 'AUDIO_FADE' },
+      { label: 'Adjust Volume', type: 'AUDIO_VOLUME' },
     ]
   },
   {

@@ -83,6 +83,20 @@ const FIELDS = {
   XML_TO_YAML:          [],
   YAML_TO_XML:          [],
   CSV_TO_XML:           [],
+  // Wave 8
+  TEXT_TO_IMAGE:        ['textContent'],
+  IMAGE_CAPTION:        ['captionText', 'captionPosition'],
+  QR_WITH_LOGO:         ['qrContent', 'qrSize'],
+  IMAGE_TO_DATA_URI:    [],
+  JSON_FLATTEN:         [],
+  JSON_UNFLATTEN:       [],
+  CSV_DEDUP:            [],
+  CSV_SORT:             ['sortColumn'],
+  NUMBER_BASE_CONVERT:  ['numberInput', 'numberFrom', 'numberTo'],
+  AUDIO_VOLUME:         ['volumeFactor'],
+  PDF_SPLIT_BY_SIZE:    ['pagesPerChunk'],
+  ZIP_ENCRYPT:          ['zipPassword', 'fileIds'],
+  CRON_DESCRIBE:        ['cronExpression'],
 }
 
 const DEFAULTS = {
@@ -125,6 +139,21 @@ const DEFAULTS = {
   loremParagraphs: 5,
   randomColumns: 'id,name,email,score',
   randomRows: 100,
+  // Wave 8
+  captionText: '',
+  captionPosition: 'bottom',
+  qrSize: 400,
+  codeTheme: 'dark',
+  fontSize: 14,
+  sortColumn: '1',
+  sortAscending: true,
+  numberInput: '',
+  numberFrom: 'decimal',
+  numberTo: 'binary',
+  volumeFactor: 1.5,
+  pagesPerChunk: 5,
+  zipPassword: '',
+  cronExpression: '0 12 * * MON-FRI',
   // Wave 6
   fadeInDuration: 2,
   fadeOutDuration: 2,
@@ -148,6 +177,7 @@ const DEFAULTS = {
 const NO_FILE_TYPES = new Set([
   'REGEX_TEST', 'PASSWORD_GENERATE', 'PASSPHRASE_GENERATE', 'COLOR_CONVERT',
   'UUID_GENERATE', 'LOREM_IPSUM', 'RANDOM_CSV',
+  'TEXT_TO_IMAGE', 'NUMBER_BASE_CONVERT', 'CRON_DESCRIBE',
 ])
 
 export default function ConversionForm({ type, file, onSubmit }) {
@@ -215,6 +245,9 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('fadeOutDuration') && <NumField label="Fade out (seconds)"  value={fields.fadeOutDuration} onChange={v => set('fadeOutDuration', v)} min={0} max={60} />}
       {needed.includes('passphraseWords') && <NumField label="Number of words"     value={fields.passphraseWords} onChange={v => set('passphraseWords', v)} min={2} max={12} />}
       {needed.includes('pwdLength')       && <NumField label="Password length"     value={fields.pwdLength}       onChange={v => set('pwdLength', v)}       min={8} max={256} />}
+      {needed.includes('pagesPerChunk')  && <NumField label="Pages per chunk" value={fields.pagesPerChunk} onChange={v => set('pagesPerChunk', v)} min={1} max={500} />}
+      {needed.includes('fontSize')       && <NumField label="Font size (px)"  value={fields.fontSize}      onChange={v => set('fontSize', v)}      min={8} max={32} />}
+      {needed.includes('qrSize')         && <NumField label="QR size (px)"    value={fields.qrSize}        onChange={v => set('qrSize', v)}        min={100} max={2000} />}
 
       {/* Sliders */}
       {needed.includes('quality') && (
@@ -237,6 +270,7 @@ export default function ConversionForm({ type, file, onSubmit }) {
           value={fields.watermarkOpacity} onChange={v => set('watermarkOpacity', v)}
           display={v => Math.round(Number(v) * 100) + '%'} />
       )}
+      {needed.includes('volumeFactor')   && <SliderField label="Volume multiplier" min={0.1} max={4} step={0.1} value={fields.volumeFactor} onChange={v => set('volumeFactor', v)} display={v => v + '×'} />}
 
       {/* Text fields */}
       {needed.includes('watermarkText')  && <TextField label="Watermark text"   value={fields.watermarkText}  onChange={v => set('watermarkText', v)} />}
@@ -258,6 +292,11 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('placeholderLabel') && <TextField label="Label text (optional)"   value={fields.placeholderLabel} onChange={v => set('placeholderLabel', v)} placeholder="400 × 300" />}
       {needed.includes('regexPattern')     && <TextField label="Regex pattern"           value={fields.regexPattern}     onChange={v => set('regexPattern', v)}     placeholder="e.g. \d{3}-\d{4}" />}
       {needed.includes('fileIds')          && <TextField label="Additional file IDs (comma-separated)" value={fields.fileIds} onChange={v => set('fileIds', v)} placeholder="fileId1,fileId2,..." />}
+      {needed.includes('captionText')    && <TextField label="Caption text"    value={fields.captionText}    onChange={v => set('captionText', v)} />}
+      {needed.includes('sortColumn')     && <TextField label="Sort by column (name or number)" value={fields.sortColumn} onChange={v => set('sortColumn', v)} placeholder="e.g. price or 3" />}
+      {needed.includes('numberInput')    && <TextField label="Number to convert" value={fields.numberInput} onChange={v => set('numberInput', v)} placeholder="e.g. 255 or FF or 11111111" />}
+      {needed.includes('zipPassword')    && <TextField label="ZIP password" value={fields.zipPassword} onChange={v => set('zipPassword', v)} placeholder="Encryption password" />}
+      {needed.includes('cronExpression') && <TextField label="Cron expression" value={fields.cronExpression} onChange={v => set('cronExpression', v)} placeholder="0 12 * * MON-FRI" />}
       {needed.includes('borderColor')    && (
         <label className="block">
           <span className="text-xs text-slate-400 mb-1 block">Border color</span>
@@ -339,6 +378,26 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('regexFlags') && (
         <SelectField label="Regex flags" value={fields.regexFlags} onChange={v => set('regexFlags', v)}
           options={[{value:'',label:'None'},{value:'i',label:'i (case insensitive)'},{value:'m',label:'m (multiline)'},{value:'s',label:'s (dot matches all)'},{value:'im',label:'im'}]} />
+      )}
+      {needed.includes('captionPosition') && (
+        <SelectField label="Caption position" value={fields.captionPosition} onChange={v => set('captionPosition', v)}
+          options={[{value:'bottom',label:'Bottom'},{value:'top',label:'Top'}]} />
+      )}
+      {needed.includes('codeTheme') && (
+        <SelectField label="Theme" value={fields.codeTheme} onChange={v => set('codeTheme', v)}
+          options={[{value:'dark',label:'Dark'},{value:'light',label:'Light'}]} />
+      )}
+      {needed.includes('numberFrom') && (
+        <SelectField label="From base" value={fields.numberFrom} onChange={v => set('numberFrom', v)}
+          options={[{value:'decimal',label:'Decimal (10)'},{value:'binary',label:'Binary (2)'},{value:'octal',label:'Octal (8)'},{value:'hex',label:'Hexadecimal (16)'}]} />
+      )}
+      {needed.includes('numberTo') && (
+        <SelectField label="To base" value={fields.numberTo} onChange={v => set('numberTo', v)}
+          options={[{value:'decimal',label:'Decimal (10)'},{value:'binary',label:'Binary (2)'},{value:'octal',label:'Octal (8)'},{value:'hex',label:'Hexadecimal (16)'}]} />
+      )}
+      {needed.includes('sortAscending') && (
+        <SelectField label="Sort direction" value={fields.sortAscending ? 'asc' : 'desc'} onChange={v => set('sortAscending', v === 'asc')}
+          options={[{value:'asc',label:'Ascending ↑'},{value:'desc',label:'Descending ↓'}]} />
       )}
 
       {/* Password checkboxes */}

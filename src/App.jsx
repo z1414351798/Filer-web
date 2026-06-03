@@ -11,6 +11,8 @@ import HealthPage from './pages/HealthPage'
 import FileManagerPage from './pages/FileManagerPage'
 import JobHistoryPage from './pages/JobHistoryPage'
 import ProfilePage from './pages/ProfilePage'
+import AdminPage   from './pages/AdminPage'
+import ApiKeysPage from './pages/ApiKeysPage'
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
             <Route path="files" element={<FileManagerPage />} />
             <Route path="jobs"  element={<JobHistoryPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="admin"   element={<AdminPage />} />
+            <Route path="apikeys" element={<ApiKeysPage />} />
           </Routes>
         </div>
         <Toaster

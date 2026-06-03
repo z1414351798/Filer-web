@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus, Activity, FolderOpen, History, User } from 'lucide-react'
+import { Zap, BarChart2, Bookmark, Clock, LogIn, LogOut, UserPlus, Activity, FolderOpen, History, User, Key, Shield } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
@@ -44,6 +44,16 @@ export default function Header() {
           {isAuthenticated && (
             <NavLink to="/profile" className={navCls}>
               <span className="flex items-center gap-1.5"><User size={14} />Profile</span>
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <NavLink to="/apikeys" className={navCls}>
+              <span className="flex items-center gap-1.5"><Key size={14} />API Keys</span>
+            </NavLink>
+          )}
+          {isAuthenticated && user?.role === 'ADMIN' && (
+            <NavLink to="/admin" className={navCls}>
+              <span className="flex items-center gap-1.5"><Shield size={14} />Admin</span>
             </NavLink>
           )}
         </nav>
