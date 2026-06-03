@@ -88,7 +88,7 @@ const CATEGORIES = [
       { label: 'Flatten (remove forms/annotations)', type: 'PDF_FLATTEN' },
       { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
       { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
-      { label: 'PDF to Text', type: 'PDF_TO_DOCX' },
+      { label: 'PDF → DOCX', type: 'PDF_TO_DOCX' },
     ]
   },
   {
@@ -135,6 +135,10 @@ const CATEGORIES = [
       { label: 'Generate UUIDs', type: 'UUID_GENERATE' },
       { label: 'Lorem Ipsum', type: 'LOREM_IPSUM' },
       { label: 'Random CSV Data', type: 'RANDOM_CSV' },
+      { label: 'Shift Subtitles', type: 'SUBTITLE_SHIFT' },
+      { label: 'XML → YAML', type: 'XML_TO_YAML' },
+      { label: 'YAML → XML', type: 'YAML_TO_XML' },
+      { label: 'CSV → XML', type: 'CSV_TO_XML' },
     ]
   },
   {
@@ -189,6 +193,18 @@ const CATEGORIES = [
     ]
   },
   {
+    id: 'devtools', label: 'Developer Tools', Icon: Code,
+    ops: [
+      { id: 'REGEX_TEST',           label: 'Regex Tester',          icon: '🔍' },
+      { id: 'COLOR_CONVERT',        label: 'Color Converter',        icon: '🎨' },
+      { id: 'HTML_MINIFY',          label: 'Minify HTML',            icon: '⚡' },
+      { id: 'JSON_MINIFY',          label: 'Minify JSON',            icon: '⚡' },
+      { id: 'PASSWORD_GENERATE',    label: 'Password Generator',     icon: '🔐' },
+      { id: 'PASSPHRASE_GENERATE',  label: 'Passphrase Generator',   icon: '🗝️' },
+      { id: 'PLACEHOLDER_IMAGE',    label: 'Placeholder Image',      icon: '🖼️' },
+    ].map(({ id, label }) => ({ label, type: id }))
+  },
+  {
     id: 'video', label: 'Video & Audio', Icon: Video,
     ops: [
       { label: 'Extract Thumbnail', type: 'VIDEO_THUMBNAIL' },
@@ -204,6 +220,10 @@ const CATEGORIES = [
       { label: 'Add Watermark to Video', type: 'VIDEO_ADD_WATERMARK' },
       { label: 'Change Video Speed', type: 'VIDEO_SPEED_CHANGE' },
       { label: 'Split Audio', type: 'AUDIO_SPLIT' },
+      { label: 'Concat Videos', type: 'VIDEO_CONCAT' },
+      { label: 'Resize Video', type: 'VIDEO_RESIZE' },
+      { label: 'Normalize Audio', type: 'AUDIO_NORMALIZE' },
+      { label: 'Audio Fade In/Out', type: 'AUDIO_FADE' },
     ]
   },
   {

@@ -62,6 +62,23 @@ const FIELDS = {
   UUID_GENERATE:        ['uuidCount'],
   LOREM_IPSUM:          ['loremParagraphs'],
   RANDOM_CSV:           ['randomColumns', 'randomRows'],
+  // Wave 6
+  PDF_TO_DOCX:          [],
+  VIDEO_CONCAT:         ['fileIds'],
+  VIDEO_RESIZE:         ['targetWidth', 'targetHeight'],
+  AUDIO_NORMALIZE:      [],
+  AUDIO_FADE:           ['fadeInDuration', 'fadeOutDuration'],
+  SUBTITLE_SHIFT:       ['shiftMs'],
+  REGEX_TEST:           ['regexPattern', 'regexInput', 'regexFlags'],
+  PASSWORD_GENERATE:    ['pwdLength'],
+  PASSPHRASE_GENERATE:  ['passphraseWords'],
+  COLOR_CONVERT:        ['colorInput', 'colorFrom', 'colorTo'],
+  PLACEHOLDER_IMAGE:    ['targetWidth', 'targetHeight'],
+  HTML_MINIFY:          [],
+  JSON_MINIFY:          [],
+  XML_TO_YAML:          [],
+  YAML_TO_XML:          [],
+  CSV_TO_XML:           [],
 }
 
 const DEFAULTS = {
@@ -104,7 +121,30 @@ const DEFAULTS = {
   loremParagraphs: 5,
   randomColumns: 'id,name,email,score',
   randomRows: 100,
+  // Wave 6
+  fadeInDuration: 2,
+  fadeOutDuration: 2,
+  shiftMs: 0,
+  regexPattern: '',
+  regexInput: '',
+  regexFlags: 'i',
+  pwdLength: 16,
+  pwdUppercase: true,
+  pwdNumbers: true,
+  pwdSymbols: false,
+  passphraseWords: 4,
+  colorInput: '#FF5733',
+  colorFrom: 'hex',
+  colorTo: 'all',
+  placeholderBg: 'CCCCCC',
+  placeholderLabel: '',
+  fileIds: '',
 }
+
+const NO_FILE_TYPES = new Set([
+  'REGEX_TEST', 'PASSWORD_GENERATE', 'PASSPHRASE_GENERATE', 'COLOR_CONVERT',
+  'UUID_GENERATE', 'LOREM_IPSUM', 'RANDOM_CSV',
+])
 
 export default function ConversionForm({ type, file, onSubmit }) {
   const [fields, setFields] = useState(DEFAULTS)
@@ -164,6 +204,11 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('uuidCount')      && <NumField label="Number of UUIDs"   value={fields.uuidCount}      onChange={v => set('uuidCount', v)}      min={1} max={10000} />}
       {needed.includes('loremParagraphs') && <NumField label="Paragraphs"       value={fields.loremParagraphs} onChange={v => set('loremParagraphs', v)} min={1} max={100} />}
       {needed.includes('randomRows')     && <NumField label="Number of rows"    value={fields.randomRows}     onChange={v => set('randomRows', v)}     min={1} max={10000} />}
+      {needed.includes('shiftMs')         && <NumField label="Shift by (ms, negative=earlier)" value={fields.shiftMs}         onChange={v => set('shiftMs', v)}         min={-3600000} max={3600000} />}
+      {needed.includes('fadeInDuration')  && <NumField label="Fade in (seconds)"   value={fields.fadeInDuration}  onChange={v => set('fadeInDuration', v)}  min={0} max={60} />}
+      {needed.includes('fadeOutDuration') && <NumField label="Fade out (seconds)"  value={fields.fadeOutDuration} onChange={v => set('fadeOutDuration', v)} min={0} max={60} />}
+      {needed.includes('passphraseWords') && <NumField label="Number of words"     value={fields.passphraseWords} onChange={v => set('passphraseWords', v)} min={2} max={12} />}
+      {needed.includes('pwdLength')       && <NumField label="Password length"     value={fields.pwdLength}       onChange={v => set('pwdLength', v)}       min={8} max={256} />}
 
       {/* Sliders */}
       {needed.includes('quality') && (
@@ -202,6 +247,11 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('pdfSubject')  && <TextField label="PDF Subject"  value={fields.pdfSubject}  onChange={v => set('pdfSubject', v)} />}
       {needed.includes('pdfKeywords') && <TextField label="PDF Keywords" value={fields.pdfKeywords} onChange={v => set('pdfKeywords', v)} placeholder="keyword1, keyword2" />}
       {needed.includes('randomColumns') && <TextField label="Column names (comma-separated)" value={fields.randomColumns} onChange={v => set('randomColumns', v)} placeholder="id,name,email,score" />}
+      {needed.includes('colorInput')       && <TextField label="Color value"             value={fields.colorInput}       onChange={v => set('colorInput', v)}       placeholder="#FF5733 or 255,87,51" />}
+      {needed.includes('placeholderBg')    && <TextField label="Background color (hex)"  value={fields.placeholderBg}    onChange={v => set('placeholderBg', v)}    placeholder="CCCCCC" />}
+      {needed.includes('placeholderLabel') && <TextField label="Label text (optional)"   value={fields.placeholderLabel} onChange={v => set('placeholderLabel', v)} placeholder="400 × 300" />}
+      {needed.includes('regexPattern')     && <TextField label="Regex pattern"           value={fields.regexPattern}     onChange={v => set('regexPattern', v)}     placeholder="e.g. \d{3}-\d{4}" />}
+      {needed.includes('fileIds')          && <TextField label="Additional file IDs (comma-separated)" value={fields.fileIds} onChange={v => set('fileIds', v)} placeholder="fileId1,fileId2,..." />}
       {needed.includes('borderColor')    && (
         <label className="block">
           <span className="text-xs text-slate-400 mb-1 block">Border color</span>
@@ -272,6 +322,30 @@ export default function ConversionForm({ type, file, onSubmit }) {
             { value: 'none',           label: 'Strip all HTML tags' },
           ]} />
       )}
+      {needed.includes('colorFrom') && (
+        <SelectField label="From format" value={fields.colorFrom} onChange={v => set('colorFrom', v)}
+          options={[{value:'hex',label:'HEX'},{value:'rgb',label:'RGB'},{value:'hsl',label:'HSL'}]} />
+      )}
+      {needed.includes('colorTo') && (
+        <SelectField label="To format" value={fields.colorTo} onChange={v => set('colorTo', v)}
+          options={[{value:'all',label:'All formats'},{value:'hex',label:'HEX'},{value:'rgb',label:'RGB'},{value:'hsl',label:'HSL'}]} />
+      )}
+      {needed.includes('regexFlags') && (
+        <SelectField label="Regex flags" value={fields.regexFlags} onChange={v => set('regexFlags', v)}
+          options={[{value:'',label:'None'},{value:'i',label:'i (case insensitive)'},{value:'m',label:'m (multiline)'},{value:'s',label:'s (dot matches all)'},{value:'im',label:'im'}]} />
+      )}
+
+      {/* Password checkboxes */}
+      {needed.includes('pwdLength') && (
+        <div className="flex gap-4 flex-wrap">
+          {[['pwdUppercase','A-Z'],['pwdNumbers','0-9'],['pwdSymbols','!@#']].map(([k,label]) => (
+            <label key={k} className="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" checked={!!fields[k]} onChange={e => set(k, e.target.checked)} className="w-4 h-4 rounded" />
+              {label}
+            </label>
+          ))}
+        </div>
+      )}
 
       {/* Textarea */}
       {needed.includes('textContent') && (
@@ -286,6 +360,18 @@ export default function ConversionForm({ type, file, onSubmit }) {
             className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono resize-y focus:outline-none focus:border-indigo-500"
           />
         </label>
+      )}
+      {needed.includes('regexInput') && (
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-1">Input text to test</label>
+          <textarea
+            value={fields.regexInput || ''}
+            onChange={e => set('regexInput', e.target.value)}
+            rows={5}
+            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500 resize-y"
+            placeholder="Enter text to test against the regex..."
+          />
+        </div>
       )}
 
       <button type="submit" disabled={loading}
