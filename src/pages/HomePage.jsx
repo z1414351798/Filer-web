@@ -63,12 +63,14 @@ const CATEGORIES = [
     ops: [
       { label: 'Merge PDFs', type: 'PDF_MERGE' },
       { label: 'Split PDF', type: 'PDF_SPLIT' },
+      { label: 'Extract Pages', type: 'PDF_PAGE_EXTRACT' },
       { label: 'PDF to Images', type: 'PDF_TO_IMAGES' },
       { label: 'Images to PDF', type: 'IMAGES_TO_PDF' },
       { label: 'Extract Text', type: 'PDF_EXTRACT_TEXT' },
       { label: 'Encrypt PDF', type: 'PDF_ENCRYPT' },
       { label: 'Decrypt PDF', type: 'PDF_DECRYPT' },
       { label: 'Compress PDF', type: 'PDF_COMPRESS' },
+      { label: 'Add Page Numbers', type: 'PDF_ADD_PAGE_NUMBERS' },
       { label: 'Watermark PDF', type: 'PDF_WATERMARK' },
       { label: 'Rotate Page', type: 'PDF_PAGE_ROTATE' },
       { label: 'PDF to Text', type: 'PDF_TO_DOCX' },
@@ -106,10 +108,15 @@ const CATEGORIES = [
     ]
   },
   {
-    id: 'office', label: 'Office', Icon: File,
+    id: 'office', label: 'Office & Documents', Icon: File,
     ops: [
+      { label: 'Word (DOCX) → PDF', type: 'DOCX_TO_PDF' },
+      { label: 'Excel (XLSX) → PDF', type: 'XLSX_TO_PDF' },
+      { label: 'PowerPoint (PPTX) → PDF', type: 'PPTX_TO_PDF' },
+      { label: 'PPTX → Images (ZIP)', type: 'PPTX_TO_IMAGES' },
       { label: 'Excel to CSV', type: 'EXCEL_TO_CSV' },
       { label: 'CSV to Excel', type: 'CSV_TO_EXCEL' },
+      { label: 'JSON to Excel', type: 'JSON_TO_EXCEL' },
       { label: 'Word to Text', type: 'WORD_TO_TEXT' },
       { label: 'Markdown to HTML', type: 'MARKDOWN_TO_HTML' },
       { label: 'Markdown to PDF', type: 'MARKDOWN_TO_PDF' },
@@ -134,11 +141,12 @@ const CATEGORIES = [
     ]
   },
   {
-    id: 'video', label: 'Video', Icon: Video,
+    id: 'video', label: 'Video & Audio', Icon: Video,
     ops: [
       { label: 'Extract Thumbnail', type: 'VIDEO_THUMBNAIL' },
       { label: 'Video to GIF', type: 'VIDEO_TO_GIF' },
       { label: 'Extract Audio (MP3)', type: 'VIDEO_AUDIO_EXTRACT' },
+      { label: 'Convert Audio', type: 'AUDIO_CONVERT' },
     ]
   },
   {

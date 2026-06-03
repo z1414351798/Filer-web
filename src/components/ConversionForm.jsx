@@ -29,6 +29,8 @@ const FIELDS = {
   TEXT_DIFF:            ['diffFileId'],
   VIDEO_THUMBNAIL:      ['videoSecond'],
   VIDEO_TO_GIF:         ['videoSecond', 'videoDuration', 'videoFps'],
+  AUDIO_CONVERT:        ['targetFormat'],
+  PDF_PAGE_EXTRACT:     ['fromPage', 'toPage'],
 }
 
 const DEFAULTS = {
@@ -52,6 +54,8 @@ const DEFAULTS = {
   textContent: '',
   diffFileId: '',
   videoSecond: 1, videoDuration: 5, videoFps: 10,
+  targetFormat: 'mp3',
+  fromPage: 1, toPage: 5,
 }
 
 export default function ConversionForm({ type, file, onSubmit }) {
@@ -97,6 +101,8 @@ export default function ConversionForm({ type, file, onSubmit }) {
       {needed.includes('videoSecond')    && <NumField label="Start second"      value={fields.videoSecond}    onChange={v => set('videoSecond', v)}    min={0} />}
       {needed.includes('videoDuration')  && <NumField label="Duration (s, max 10)" value={fields.videoDuration} onChange={v => set('videoDuration', v)} min={1} max={10} />}
       {needed.includes('videoFps')       && <NumField label="FPS (max 15)"      value={fields.videoFps}       onChange={v => set('videoFps', v)}       min={1} max={15} />}
+      {needed.includes('fromPage')       && <NumField label="From page (1-based)" value={fields.fromPage}     onChange={v => set('fromPage', v)}       min={1} />}
+      {needed.includes('toPage')         && <NumField label="To page (0 = last)"  value={fields.toPage}       onChange={v => set('toPage', v)}         min={0} />}
 
       {/* Sliders */}
       {needed.includes('quality') && (
@@ -155,6 +161,17 @@ export default function ConversionForm({ type, file, onSubmit }) {
             { value: 'CODE_128', label: 'Code 128' },
             { value: 'EAN_13',   label: 'EAN-13' },
             { value: 'QR_CODE',  label: 'QR Code' },
+          ]} />
+      )}
+      {needed.includes('targetFormat') && (
+        <SelectField label="Target Audio Format" value={fields.targetFormat} onChange={v => set('targetFormat', v)}
+          options={[
+            { value: 'mp3',  label: 'MP3' },
+            { value: 'wav',  label: 'WAV' },
+            { value: 'ogg',  label: 'OGG' },
+            { value: 'aac',  label: 'AAC' },
+            { value: 'flac', label: 'FLAC' },
+            { value: 'm4a',  label: 'M4A' },
           ]} />
       )}
 
